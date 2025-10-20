@@ -1,0 +1,1 @@
+export { ScalesOfJustice } from './ScalesOfJustice';

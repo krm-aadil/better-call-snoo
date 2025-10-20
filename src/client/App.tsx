@@ -1,59 +1,71 @@
-import { navigateTo } from '@devvit/web/client';
-import { useCounter } from './hooks/useCounter';
+import React from 'react';
+import { useGame } from './hooks/useGame';
+import { useDefenseSubmission } from './hooks/useDefenseSubmission';
+import { DailyDocket } from './components/DailyDocket';
+import { DefenseForm } from './components/DefenseForm';
 
 export const App = () => {
-  const { count, username, loading, increment, decrement } = useCounter();
-  return (
-    <div className="flex relative flex-col justify-center items-center min-h-screen gap-4">
-      <img className="object-contain w-1/2 max-w-[250px] mx-auto" src="/snoo.png" alt="Snoo" />
-      <div className="flex flex-col items-center gap-2">
-        <h1 className="text-2xl font-bold text-center text-gray-900 ">
-          {username ? `Hey ${username} 👋` : ''}
-        </h1>
-        <p className="text-base text-center text-gray-600 ">
-          Edit <span className="bg-[#e5ebee]  px-1 py-0.5 rounded">src/client/App.tsx</span> to get
-          started.
-        </p>
+  const { gameState, cases, selectedCase, username, loading, error, selectCase, backToDocket, setGameState } = useGame();
+  const { submitDefense, loading: submissionLoading } = useDefenseSubmission();
+
+  const handleDefenseSubmit = async (defenseText: string) => {
+    if (!selectedCase) return;
+    
+    const success = await submitDefense(selectedCase.id, defenseText);
+    if (success) {
+      // Navigate to success state or back to docket
+      backToDocket();
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-blue-900 to-purple-900">
+        <div className="text-white text-2xl">Loading Better Call Snoo...</div>
       </div>
-      <div className="flex items-center justify-center mt-5">
-        <button
-          className="flex items-center justify-center bg-[#d93900] text-white w-14 h-14 text-[2.5em] rounded-full cursor-pointer font-mono leading-none transition-colors hover:bg-[#c13300]"
-          onClick={decrement}
-        >
-          -
-        </button>
-        <span className="text-[1.8em] font-medium mx-5 min-w-[50px] text-center leading-none text-gray-900">
-          {loading ? '...' : count}
-        </span>
-        <button
-          className="flex items-center justify-center bg-[#d93900] text-white w-14 h-14 text-[2.5em] rounded-full cursor-pointer font-mono leading-none transition-colors hover:bg-[#c13300]"
-          onClick={increment}
-        >
-          +
-        </button>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-red-900 to-purple-900">
+        <div className="text-white text-xl text-center">
+          <h1 className="text-2xl font-bold mb-4">Error</h1>
+          <p>{error}</p>
+        </div>
       </div>
-      <footer className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-3 text-[0.8em] text-gray-600">
-        <button
-          className="cursor-pointer"
-          onClick={() => navigateTo('https://developers.reddit.com/docs')}
-        >
-          Docs
-        </button>
-        <span className="text-gray-300">|</span>
-        <button
-          className="cursor-pointer"
-          onClick={() => navigateTo('https://www.reddit.com/r/Devvit')}
-        >
-          r/Devvit
-        </button>
-        <span className="text-gray-300">|</span>
-        <button
-          className="cursor-pointer"
-          onClick={() => navigateTo('https://discord.com/invite/R7yu2wh9Qz')}
-        >
-          Discord
-        </button>
-      </footer>
-    </div>
-  );
+    );
+  }
+
+  switch (gameState) {
+    case 'daily_docket':
+      return (
+        <DailyDocket
+          cases={cases}
+          onCaseSelect={selectCase}
+          loading={loading}
+        />
+      );
+
+    case 'defense_submission':
+      if (!selectedCase) {
+        backToDocket();
+        return null;
+      }
+      return (
+        <DefenseForm
+          case_={selectedCase}
+          onSubmit={handleDefenseSubmit}
+          onBack={backToDocket}
+          loading={submissionLoading}
+        />
+      );
+
+    default:
+      return (
+        <div className="flex justify-center items-center min-h-screen">
+          <div className="text-xl">Game state not implemented: {gameState}</div>
+        </div>
+      );
+  }
 };

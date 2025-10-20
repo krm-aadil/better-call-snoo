@@ -9,19 +9,19 @@ export const createPost = async () => {
   return await reddit.submitCustomPost({
     splash: {
       // Splash Screen Configuration
-      appDisplayName: 'better-call-snoo',
+      appDisplayName: 'Better Call Snoo',
       backgroundUri: 'default-splash.png',
-      buttonLabel: 'Tap to Start',
-      description: 'An exciting interactive experience',
+      buttonLabel: 'Enter Courtroom',
+      description: 'Defend quirky cases and vote as jury in this Ace Attorney-inspired legal game!',
       entryUri: 'index.html',
-      heading: 'Welcome to the Game!',
+      heading: 'Better Call Snoo',
       appIconUri: 'default-icon.png',
     },
     postData: {
-      gameState: 'initial',
-      score: 0,
+      gameType: 'better-call-snoo',
+      gameState: 'daily_docket',
     },
     subredditName: subredditName,
-    title: 'better-call-snoo',
+    title: 'Better Call Snoo - Daily Legal Defense Game',
   });
 };

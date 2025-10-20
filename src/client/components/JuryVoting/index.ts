@@ -1,0 +1,1 @@
+export { JuryVoting } from './JuryVoting';
