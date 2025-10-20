@@ -31,7 +31,30 @@ The game features a clean, mobile-first design with Reddit's signature orange co
 - **Redis**: Data persistence layer (via Devvit)
 - **Tailwind CSS**: Utility-first CSS framework for styling
 
-## Getting Started
+## How to Play
+
+### For Reddit Users:
+1. **Find the Game**: Look for "Better Call Snoo" posts in participating subreddits
+2. **Launch**: Click the "Tap to Start" button on the splash screen to open the full game
+3. **Play**: 
+   - Click the **"+"** button to increase the counter
+   - Click the **"-"** button to decrease the counter
+   - Watch as your changes are instantly reflected and saved
+4. **Compete**: See how high (or low) you and the community can make the counter go!
+
+### Game Features:
+- **Instant Feedback**: Your clicks register immediately with smooth animations
+- **Persistent Progress**: The counter value is saved and shared across all players
+- **User Recognition**: Your Reddit username is displayed while you play
+- **Mobile Friendly**: Optimized for both desktop and mobile Reddit browsing
+
+### Tips for Playing:
+- The counter starts at 0 and can go positive or negative
+- All players share the same counter - it's a community effort!
+- Your changes are saved automatically - no need to worry about losing progress
+- The game works best on the official Reddit app or website
+
+## Development Setup
 
 > Make sure you have Node 22 downloaded on your machine before running!
 
@@ -39,14 +62,31 @@ The game features a clean, mobile-first design with Reddit's signature orange co
 2. Go through the installation wizard. You will need to create a Reddit account and connect it to Reddit developers
 3. Copy the command on the success page into your terminal
 
-## Commands
+## Development Commands
 
-- `npm run dev`: Starts a development server where you can develop your application live on Reddit.
+- `npm run dev`: Starts a development server where you can develop your application live on Reddit
 - `npm run build`: Builds your client and server projects
 - `npm run deploy`: Uploads a new version of your app
 - `npm run launch`: Publishes your app for review
 - `npm run login`: Logs your CLI into Reddit
 - `npm run check`: Type checks, lints, and prettifies your app
+
+## Game Architecture
+
+### Client (`src/client/`)
+- **React App**: Main game interface with counter buttons and user display
+- **Custom Hook**: `useCounter` manages state, API calls, and optimistic updates
+- **Responsive Design**: Mobile-first approach with Tailwind CSS styling
+
+### Server (`src/server/`)
+- **Express API**: RESTful endpoints for game state management
+- **Redis Integration**: Persistent counter storage using Redis
+- **Reddit Integration**: User authentication and post creation
+
+### API Endpoints
+- `GET /api/init`: Initialize game state and fetch current counter value
+- `POST /api/increment`: Increase counter by 1
+- `POST /api/decrement`: Decrease counter by 1
 
 ## Cursor Integration
 
