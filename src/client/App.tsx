@@ -17,9 +17,8 @@ export const App = () => {
       </div>
       <div className="flex items-center justify-center mt-5">
         <button
-          className="flex items-center justify-center bg-[#d93900] text-white w-14 h-14 text-[2.5em] rounded-full cursor-pointer font-mono leading-none transition-colors"
+          className="flex items-center justify-center bg-[#d93900] text-white w-14 h-14 text-[2.5em] rounded-full cursor-pointer font-mono leading-none transition-colors hover:bg-[#c13300]"
           onClick={decrement}
-          disabled={loading}
         >
           -
         </button>
@@ -27,9 +26,8 @@ export const App = () => {
           {loading ? '...' : count}
         </span>
         <button
-          className="flex items-center justify-center bg-[#d93900] text-white w-14 h-14 text-[2.5em] rounded-full cursor-pointer font-mono leading-none transition-colors"
+          className="flex items-center justify-center bg-[#d93900] text-white w-14 h-14 text-[2.5em] rounded-full cursor-pointer font-mono leading-none transition-colors hover:bg-[#c13300]"
           onClick={increment}
-          disabled={loading}
         >
           +
         </button>

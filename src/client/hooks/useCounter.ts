@@ -39,6 +39,11 @@ export const useCounter = () => {
         console.error('No postId – cannot update counter');
         return;
       }
+      
+      // Optimistic update - update UI immediately
+      const delta = action === 'increment' ? 1 : -1;
+      setState((prev) => ({ ...prev, count: prev.count + delta }));
+      
       try {
         const res = await fetch(`/api/${action}`, {
           method: 'POST',
@@ -47,9 +52,12 @@ export const useCounter = () => {
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data: IncrementResponse | DecrementResponse = await res.json();
+        // Sync with server response (in case of discrepancy)
         setState((prev) => ({ ...prev, count: data.count }));
       } catch (err) {
         console.error(`Failed to ${action}`, err);
+        // Revert optimistic update on error
+        setState((prev) => ({ ...prev, count: prev.count - delta }));
       }
     },
     [postId]
