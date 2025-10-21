@@ -1,12 +1,16 @@
 // Leaderboard service for managing attorney and juror rankings
-// This file will be implemented in later tasks
+import { getAttorneyLeaderboard, getJurorLeaderboard } from '../core/scoring';
 
-export const getTopAttorneys = async (_limit: number = 10) => {
-  // TODO: Implement attorney leaderboard retrieval
-  return [];
+/**
+ * Get top attorneys from the leaderboard
+ */
+export const getTopAttorneys = async (limit: number = 10) => {
+  return await getAttorneyLeaderboard(limit);
 };
 
-export const getTopJurors = async (_limit: number = 10) => {
-  // TODO: Implement juror leaderboard retrieval
-  return [];
+/**
+ * Get top jurors from the leaderboard
+ */
+export const getTopJurors = async (limit: number = 10) => {
+  return await getJurorLeaderboard(limit);
 };

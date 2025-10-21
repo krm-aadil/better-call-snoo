@@ -133,7 +133,6 @@
 
 - [x] 8. Integrate all systems and final polish
 
-
 - [x] 8.1 Connect all game components
 
   - Wire Daily Docket to Defense Submission to Jury Voting flow

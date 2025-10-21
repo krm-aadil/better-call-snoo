@@ -1,14 +1,24 @@
 // Scoring service for attorney and juror score calculations
-// This file will be implemented in later tasks
+// These functions implement the scoring formulas from the requirements
 
-export const calculateAttorneyScore = (_votes: { guilty: number; notGuilty: number }) => {
-  // TODO: Implement attorney scoring algorithm
-  // Formula: (Not Guilty votes × 2) - (Guilty votes) + win bonus
-  return 0;
+/**
+ * Calculate attorney score based on voting results
+ * Formula from requirements: (Total 'Not GUILTY' Votes * 2) - (Total 'GUILTY' Votes) + 500 bonus if majority Not Guilty
+ */
+export const calculateAttorneyScore = (votes: { guilty: number; notGuilty: number }): number => {
+  // Base score calculation
+  const baseScore = (votes.notGuilty * 2) - votes.guilty;
+  
+  // Add +500 bonus if majority Not Guilty (>50%)
+  const winBonus = votes.notGuilty > votes.guilty ? 500 : 0;
+  
+  return baseScore + winBonus;
 };
 
-export const calculateJurorScore = (_userVote: string, _finalVerdict: string) => {
-  // TODO: Implement juror scoring algorithm
-  // +10 points for matching majority vote
-  return 0;
+/**
+ * Calculate juror score based on vote accuracy
+ * Formula from requirements: +10 points if vote matches final verdict, 0 points otherwise
+ */
+export const calculateJurorScore = (userVote: string, finalVerdict: string): number => {
+  return userVote === finalVerdict ? 10 : 0;
 };

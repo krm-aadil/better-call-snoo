@@ -204,7 +204,11 @@ async function updateJurorScore(userId: string, username: string, scoreChange: n
   // Set expiration (90 days)
   await redis.expire(jurorKey, 90 * 24 * 60 * 60);
   
-
+  // Update leaderboard sorted set
+  const newTotalPoints = await redis.hGet(jurorKey, 'totalPoints');
+  if (newTotalPoints) {
+    await redis.zAdd('leaderboard:jurors', { member: userId, score: parseInt(newTotalPoints) });
+  }
 }
 
 /**
