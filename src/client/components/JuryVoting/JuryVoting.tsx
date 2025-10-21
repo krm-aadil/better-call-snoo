@@ -1,109 +1,225 @@
-import React from 'react';
-import type { JuryVotingState } from '../../../shared/types/game';
+import React, { useMemo, useEffect } from 'react';
+import type { Case } from '../../../shared/types/api';
+import type { CharacterPose } from '../../../shared/types/game';
+import { useJuryVoting } from '../../hooks/useJuryVoting';
+import { CourtRoomCharacters } from './CharacterSprites';
+import { VotingButtons } from './VotingButtons';
+import { ScalesOfJustice } from '../ScalesOfJustice';
+import { VoteUpdateIndicator } from '../VoteUpdateIndicator';
+import { audioManager } from '../../utils/audioUtils';
 
 type JuryVotingProps = {
-  state: JuryVotingState;
-  onVote: (vote: 'guilty' | 'not_guilty') => void;
-  loading?: boolean;
+  caseData: Case;
+  defenseText: string;
+  authorUsername: string;
 };
 
-export const JuryVoting: React.FC<JuryVotingProps> = ({ state, onVote, loading = false }) => {
-  const { caseData, defenseText, authorUsername, votes, votingClosed } = state;
+export const JuryVoting: React.FC<JuryVotingProps> = ({ 
+  caseData, 
+  defenseText, 
+  authorUsername 
+}) => {
+  const { votes, loading, error, hasVoted, submitVote, connectionStatus, lastUpdateTime } = useJuryVoting();
+
+  // Initialize audio system on component mount
+  useEffect(() => {
+    const initAudio = async () => {
+      try {
+        await audioManager.initialize();
+        const status = audioManager.getStatus();
+        console.log('Audio system status:', status);
+      } catch (err) {
+        console.warn('Audio initialization failed:', err);
+      }
+    };
+    
+    // Initialize audio after a short delay to ensure user interaction
+    const timer = setTimeout(initAudio, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Determine character poses based on vote percentages
+  const { victimPose, lawyerPose } = useMemo((): { victimPose: CharacterPose; lawyerPose: CharacterPose } => {
+    if (votes.totalVotes === 0) {
+      return { victimPose: 'neutral', lawyerPose: 'neutral' };
+    }
+
+    const guiltyPercentage = (votes.guilty / votes.totalVotes) * 100;
+    const notGuiltyPercentage = (votes.notGuilty / votes.totalVotes) * 100;
+
+    let victimPose: CharacterPose = 'neutral';
+    let lawyerPose: CharacterPose = 'neutral';
+
+    if (notGuiltyPercentage > 60) {
+      victimPose = 'celebrating';
+      lawyerPose = 'celebrating';
+    } else if (guiltyPercentage > 60) {
+      victimPose = 'defeated';
+      lawyerPose = 'defeated';
+    } else if (notGuiltyPercentage > guiltyPercentage) {
+      victimPose = 'confident';
+      lawyerPose = 'confident';
+    } else if (guiltyPercentage > notGuiltyPercentage) {
+      victimPose = 'worried';
+      lawyerPose = 'worried';
+    }
+
+    return { victimPose, lawyerPose };
+  }, [votes]);
+
+  const handleVote = async (vote: 'guilty' | 'not_guilty') => {
+    const success = await submitVote(vote);
+    if (success) {
+      // Vote submitted successfully, the component will update via the hook
+    }
+  };
+
+  if (loading && votes.totalVotes === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-yellow-800 via-orange-800 to-red-900 flex items-center justify-center">
+        <div className="text-white text-2xl ace-attorney-text">Loading Courtroom...</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-yellow-800 to-orange-900 p-4">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold text-white text-center mb-8">Courtroom</h1>
-        
-        {/* Case Banner */}
-        <div className="bg-white rounded-lg shadow-lg p-4 mb-6">
-          <h2 className="text-xl font-bold">{caseData.title}</h2>
-          <p className="text-gray-600">{caseData.crime}</p>
-        </div>
-
-        {/* Courtroom Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          {/* Victim Snoo */}
-          <div className="bg-white rounded-lg shadow-lg p-6 text-center">
-            <div className="w-32 h-32 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center">
-              <span className="text-4xl">😰</span>
+    <div className="min-h-screen bg-gradient-to-b from-yellow-800 via-orange-800 to-red-900 p-4">
+      {/* Skip link for accessibility */}
+      <a href="#main-courtroom" className="skip-link">
+        Skip to courtroom content
+      </a>
+      
+      {/* Vote Update Indicator */}
+      <VoteUpdateIndicator totalVotes={votes.totalVotes} />
+      
+      <div className="max-w-6xl mx-auto">
+        {/* Courtroom Header */}
+        <header className="text-center mb-8">
+          <h1 
+            id="main-courtroom"
+            className="text-5xl font-bold text-white ace-attorney-text mb-4 animate-text-reveal mobile-text"
+            tabIndex={-1}
+          >
+            COURTROOM
+          </h1>
+          <div className="bg-gradient-to-r from-yellow-600 to-yellow-800 rounded-lg shadow-2xl p-4 border-4 border-yellow-500 mobile-spacing animate-scale-in" style={{ animationDelay: '0.5s' }}>
+            <div className="bg-white rounded-lg p-4">
+              <h2 className="text-2xl font-bold ace-attorney-text text-gray-800 mb-2 mobile-text">
+                {caseData.title}
+              </h2>
+              <p className="text-lg text-gray-600 font-semibold mobile-text">
+                <span className="sr-only">Accused crime: </span>Crime: {caseData.crime}
+              </p>
             </div>
-            <h3 className="text-lg font-bold">Victim Snoo</h3>
-            <p className="text-gray-600">The Defendant</p>
           </div>
+        </header>
 
-          {/* Lawyer Snoo */}
-          <div className="bg-white rounded-lg shadow-lg p-6 text-center">
-            <div className="w-32 h-32 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center">
-              <span className="text-4xl">⚖️</span>
+        {/* Character Sprites */}
+        <CourtRoomCharacters
+          victimPose={victimPose}
+          lawyerPose={lawyerPose}
+          authorUsername={authorUsername}
+        />
+
+        {/* Defense Argument Display */}
+        <section 
+          className="bg-gradient-to-r from-blue-800 to-blue-900 rounded-lg shadow-2xl p-6 mb-8 border-4 border-blue-600 mobile-spacing animate-slide-in-left"
+          aria-labelledby="defense-heading"
+          style={{ animationDelay: '0.8s' }}
+        >
+          <h2 id="defense-heading" className="text-2xl font-bold text-center mb-4 ace-attorney-text text-white mobile-text">
+            DEFENSE ARGUMENT
+          </h2>
+          <div className="bg-white rounded-lg p-6 shadow-inner">
+            <div className="relative">
+              <div className="absolute -top-2 -left-2 text-4xl text-blue-600" aria-hidden="true">"</div>
+              <blockquote className="text-xl italic text-gray-800 font-semibold px-6 mobile-text">
+                <span className="sr-only">Defense argument by {authorUsername}: </span>
+                {defenseText}
+              </blockquote>
+              <div className="absolute -bottom-2 -right-2 text-4xl text-blue-600" aria-hidden="true">"</div>
             </div>
-            <h3 className="text-lg font-bold">Lawyer Snoo</h3>
-            <p className="text-gray-600">Defense Attorney: {authorUsername}</p>
           </div>
-        </div>
-
-        {/* Defense Argument */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <h3 className="text-xl font-bold mb-4">Defense Argument</h3>
-          <div className="bg-gray-100 p-4 rounded-lg">
-            <p className="text-lg italic">"{defenseText}"</p>
-          </div>
-        </div>
+        </section>
 
         {/* Voting Section */}
-        {!votingClosed && !votes.userVote && (
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-            <h3 className="text-xl font-bold mb-4 text-center">Cast Your Verdict</h3>
-            <div className="flex gap-4 justify-center">
-              <button
-                onClick={() => onVote('guilty')}
-                disabled={loading}
-                className="bg-red-600 text-white px-8 py-4 rounded-lg text-xl font-bold hover:bg-red-700 transition-colors disabled:opacity-50"
-              >
-                GUILTY
-              </button>
-              <button
-                onClick={() => onVote('not_guilty')}
-                disabled={loading}
-                className="bg-green-600 text-white px-8 py-4 rounded-lg text-xl font-bold hover:bg-green-700 transition-colors disabled:opacity-50"
-              >
-                NOT GUILTY
-              </button>
-            </div>
+        {!hasVoted && (
+          <VotingButtons
+            onVote={handleVote}
+            loading={loading}
+            disabled={hasVoted}
+          />
+        )}
+
+        {/* Error Display */}
+        {error && (
+          <div 
+            className="bg-red-600 text-white p-4 rounded-lg mb-6 text-center font-bold mobile-spacing mobile-text" 
+            role="alert"
+            aria-live="assertive"
+          >
+            <span className="sr-only">Error: </span>{error}
           </div>
         )}
 
-        {/* Scales of Justice - Vote Results */}
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h3 className="text-xl font-bold mb-4 text-center">Scales of Justice</h3>
-          <div className="flex justify-center items-center gap-8">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-red-600">
-                {votes.totalVotes > 0 ? Math.round((votes.guilty / votes.totalVotes) * 100) : 0}%
-              </div>
-              <div className="text-red-600 font-semibold">GUILTY</div>
-              <div className="text-sm text-gray-500">{votes.guilty} votes</div>
-            </div>
-            
-            <div className="text-6xl">⚖️</div>
-            
-            <div className="text-center">
-              <div className="text-3xl font-bold text-green-600">
-                {votes.totalVotes > 0 ? Math.round((votes.notGuilty / votes.totalVotes) * 100) : 0}%
-              </div>
-              <div className="text-green-600 font-semibold">NOT GUILTY</div>
-              <div className="text-sm text-gray-500">{votes.notGuilty} votes</div>
-            </div>
-          </div>
+        {/* Scales of Justice */}
+        <section 
+          className="bg-gradient-to-r from-purple-800 to-purple-900 rounded-lg shadow-2xl p-6 border-4 border-purple-600 mobile-spacing animate-slide-in-right"
+          aria-labelledby="scales-heading"
+          style={{ animationDelay: '1.2s' }}
+        >
+          <h2 id="scales-heading" className="text-3xl font-bold text-center mb-6 ace-attorney-text text-white mobile-text">
+            SCALES OF JUSTICE
+          </h2>
+          <ScalesOfJustice 
+            votes={votes} 
+            animated={true} 
+            showLiveIndicator={connectionStatus === 'connected'} 
+          />
           
-          {votes.userVote && (
-            <div className="mt-4 text-center">
-              <p className="text-lg">
-                You voted: <span className={`font-bold ${votes.userVote === 'guilty' ? 'text-red-600' : 'text-green-600'}`}>
+          {hasVoted && (
+            <div className="mt-6 text-center bg-white rounded-lg p-4 mobile-spacing" role="status" aria-live="polite">
+              <p className="text-xl font-bold mobile-text">
+                <span className="sr-only">You voted: </span>Your Verdict: <span className={`ace-attorney-text ${votes.userVote === 'guilty' ? 'text-red-600' : 'text-green-600'}`}>
                   {votes.userVote === 'guilty' ? 'GUILTY' : 'NOT GUILTY'}
                 </span>
               </p>
+              <p className="text-gray-600 mt-2 mobile-text">
+                Thank you for serving on the jury!
+              </p>
             </div>
+          )}
+        </section>
+
+        {/* Real-Time Connection Status */}
+        <div className="text-center mt-4">
+          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold ${
+            connectionStatus === 'connected' 
+              ? 'bg-green-100 text-green-800 border border-green-300' 
+              : connectionStatus === 'connecting'
+                ? 'bg-yellow-100 text-yellow-800 border border-yellow-300'
+                : connectionStatus === 'error'
+                  ? 'bg-red-100 text-red-800 border border-red-300'
+                  : 'bg-gray-100 text-gray-800 border border-gray-300'
+          }`}>
+            <div className={`w-2 h-2 rounded-full ${
+              connectionStatus === 'connected' 
+                ? 'bg-green-500 animate-pulse' 
+                : connectionStatus === 'connecting'
+                  ? 'bg-yellow-500 animate-spin'
+                  : connectionStatus === 'error'
+                    ? 'bg-red-500'
+                    : 'bg-gray-500'
+            }`}></div>
+            {connectionStatus === 'connected' && '🔄 Live Updates Active'}
+            {connectionStatus === 'connecting' && '⏳ Connecting...'}
+            {connectionStatus === 'error' && '⚠️ Connection Issues'}
+            {connectionStatus === 'disconnected' && '📡 Disconnected'}
+          </div>
+          {lastUpdateTime && connectionStatus === 'connected' && (
+            <p className="text-yellow-200 text-xs mt-1">
+              Last updated: {new Date(lastUpdateTime).toLocaleTimeString()}
+            </p>
           )}
         </div>
       </div>

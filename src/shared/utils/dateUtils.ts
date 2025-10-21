@@ -2,7 +2,7 @@
 // This file will be used in later tasks
 
 export const getTodayDateString = (): string => {
-  return new Date().toISOString().split('T')[0];
+  return new Date().toISOString().split('T')[0]!;
 };
 
 export const getSeededRandom = (seed: string): number => {

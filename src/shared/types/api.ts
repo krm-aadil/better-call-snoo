@@ -6,6 +6,18 @@ export type InitResponse = {
   dailyCases: Case[];
 };
 
+// Jury voting initialization response
+export type JuryVotingInitResponse = {
+  type: 'jury_voting_init';
+  postId: string;
+  username: string;
+  caseData: Case;
+  defenseText: string;
+  authorUsername: string;
+  defenseId: string;
+  votingEndTime: number;
+};
+
 // Case data structure
 export type Case = {
   id: string;
@@ -44,6 +56,7 @@ export type VoteData = {
   notGuilty: number;
   totalVotes: number;
   userVote?: 'guilty' | 'not_guilty';
+  votingClosed?: boolean;
 };
 
 // Leaderboard data

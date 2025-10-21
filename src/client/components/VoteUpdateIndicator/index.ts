@@ -1,0 +1,1 @@
+export { VoteUpdateIndicator } from './VoteUpdateIndicator';

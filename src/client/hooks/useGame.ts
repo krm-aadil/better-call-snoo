@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { InitResponse, Case } from '../../shared/types/api';
+import type { InitResponse, JuryVotingInitResponse, Case } from '../../shared/types/api';
 import type { GameState } from '../../shared/types/game';
 
 type GameHookState = {
@@ -9,6 +9,14 @@ type GameHookState = {
   username: string | null;
   loading: boolean;
   error: string | null;
+  // Jury voting specific data
+  juryVotingData?: {
+    caseData: Case;
+    defenseText: string;
+    authorUsername: string;
+    defenseId: string;
+    votingEndTime: number;
+  };
 };
 
 export const useGame = () => {
@@ -27,15 +35,34 @@ export const useGame = () => {
       try {
         const res = await fetch('/api/init');
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data: InitResponse = await res.json();
-        if (data.type !== 'init') throw new Error('Unexpected response');
+        const data: InitResponse | JuryVotingInitResponse = await res.json();
         
-        setState(prev => ({
-          ...prev,
-          cases: data.dailyCases,
-          username: data.username,
-          loading: false,
-        }));
+        if (data.type === 'jury_voting_init') {
+          // This is a jury voting post
+          setState(prev => ({
+            ...prev,
+            gameState: 'jury_voting',
+            username: data.username,
+            juryVotingData: {
+              caseData: data.caseData,
+              defenseText: data.defenseText,
+              authorUsername: data.authorUsername,
+              defenseId: data.defenseId,
+              votingEndTime: data.votingEndTime,
+            },
+            loading: false,
+          }));
+        } else if (data.type === 'init') {
+          // This is the main game post
+          setState(prev => ({
+            ...prev,
+            cases: data.dailyCases,
+            username: data.username,
+            loading: false,
+          }));
+        } else {
+          throw new Error('Unexpected response type');
+        }
       } catch (err) {
         console.error('Failed to initialize game', err);
         setState(prev => ({

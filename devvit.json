@@ -6,6 +6,9 @@
     "entrypoints": {
       "default": {
         "entry": "index.html"
+      },
+      "jury-voting": {
+        "entry": "index.html"
       }
     }
   },

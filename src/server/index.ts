@@ -1,8 +1,10 @@
 import express from 'express';
-import { InitResponse, DefenseSubmissionRequest, DefenseSubmissionResponse, VoteSubmissionRequest, VoteSubmissionResponse, VoteData } from '../shared/types/api';
+import { InitResponse, JuryVotingInitResponse, DefenseSubmissionRequest, DefenseSubmissionResponse, VoteSubmissionRequest, VoteSubmissionResponse, VoteData, Case, LeaderboardResponse } from '../shared/types/api';
 import { redis, reddit, createServer, context, getServerPort } from '@devvit/web/server';
-import { createPost } from './core/post';
-import { getRandomCases } from './data/caseLibrary';
+import { createPost, createDefensePost } from './core/post';
+import { getDailyCases, getCaseById } from './data/caseLibrary';
+import { getAttorneyLeaderboard, getJurorLeaderboard, checkAndProcessExpiredVoting } from './core/scoring';
+import { scheduleVotingClosure } from './core/voteUtils';
 
 const app = express();
 
@@ -15,11 +17,28 @@ app.use(express.text());
 
 const router = express.Router();
 
+// Get daily cases
+router.get<{}, Case[] | { status: string; message: string }>(
+  '/api/daily-cases',
+  async (_req, res): Promise<void> => {
+    try {
+      const dailyCases = await getDailyCases(5);
+      res.json(dailyCases);
+    } catch (error) {
+      console.error('Daily cases fetch error:', error);
+      res.status(500).json({
+        status: 'error',
+        message: 'Failed to fetch daily cases',
+      });
+    }
+  }
+);
+
 // Initialize game data
 router.get<{ postId: string }, InitResponse | { status: string; message: string }>(
   '/api/init',
   async (_req, res): Promise<void> => {
-    const { postId } = context;
+    const { postId, postData } = context;
 
     if (!postId) {
       console.error('API Init Error: postId not found in devvit context');
@@ -31,12 +50,34 @@ router.get<{ postId: string }, InitResponse | { status: string; message: string 
     }
 
     try {
-      const [username] = await Promise.all([
-        reddit.getCurrentUsername(),
-      ]);
+      const username = await reddit.getCurrentUsername();
 
+      // Check if this is a jury voting post
+      if (postData && postData.gameState === 'jury_voting') {
+        // Return jury voting specific data
+        const juryResponse: JuryVotingInitResponse = {
+          type: 'jury_voting_init',
+          postId: postId,
+          username: username ?? 'anonymous',
+          caseData: {
+            id: postData.caseId as string,
+            title: postData.caseTitle as string,
+            crime: postData.caseCrime as string,
+            category: postData.caseCategory as string,
+            difficulty: postData.caseDifficulty as 'easy' | 'medium' | 'hard',
+          },
+          defenseText: postData.defenseText as string,
+          authorUsername: postData.authorUsername as string,
+          defenseId: postData.defenseId as string,
+          votingEndTime: typeof postData.votingEndTime === 'number' ? postData.votingEndTime : parseInt(postData.votingEndTime as string),
+        };
+        res.json(juryResponse as any);
+        return;
+      }
+
+      // Default: main game initialization
       // Get daily cases (5 random cases based on today's date)
-      const dailyCases = getRandomCases(5);
+      const dailyCases = await getDailyCases(5);
 
       res.json({
         type: 'init',
@@ -71,10 +112,20 @@ router.post<{ postId: string }, DefenseSubmissionResponse | { status: string; me
     try {
       const { caseId, defenseText } = req.body;
       
-      if (!caseId || !defenseText || defenseText.length > 250) {
+      if (!caseId || !defenseText || defenseText.length > 250 || defenseText.trim().length === 0) {
         res.status(400).json({
           status: 'error',
           message: 'Invalid defense submission',
+        });
+        return;
+      }
+
+      // Get case data
+      const caseData = getCaseById(caseId);
+      if (!caseData) {
+        res.status(400).json({
+          status: 'error',
+          message: 'Case not found',
         });
         return;
       }
@@ -83,20 +134,35 @@ router.post<{ postId: string }, DefenseSubmissionResponse | { status: string; me
       
       // Store defense submission
       const defenseId = `defense_${postId}_${Date.now()}`;
-      await redis.hset(`defense:${defenseId}`, {
+      await redis.hSet(`defense:${defenseId}`, {
         caseId,
-        defenseText,
+        defenseText: defenseText.trim(),
         authorId: context.userId || 'anonymous',
         authorUsername: username || 'anonymous',
         timestamp: Date.now().toString(),
         votingEndTime: (Date.now() + 24 * 60 * 60 * 1000).toString(), // 24 hours from now
       });
 
-      // TODO: Create custom post for jury voting (will be implemented in later tasks)
+      // Create custom post for jury voting
+      const defensePost = await createDefensePost(
+        caseData,
+        defenseText.trim(),
+        username || 'anonymous',
+        defenseId
+      );
+
+      // Store the post ID for reference
+      await redis.hSet(`defense:${defenseId}`, {
+        postId: defensePost.id,
+      });
+
+      // Schedule voting period closure for scoring
+      const votingEndTime = Date.now() + 24 * 60 * 60 * 1000; // 24 hours from now
+      await scheduleVotingClosure(defensePost.id, defenseId, votingEndTime);
 
       res.json({
         type: 'defense_submitted',
-        postId,
+        postId: defensePost.id,
         success: true,
       });
     } catch (error) {
@@ -113,7 +179,7 @@ router.post<{ postId: string }, DefenseSubmissionResponse | { status: string; me
 router.post<{ postId: string }, VoteSubmissionResponse | { status: string; message: string }, VoteSubmissionRequest>(
   '/api/vote',
   async (req, res): Promise<void> => {
-    const { postId } = context;
+    const { postId, postData } = context;
     if (!postId) {
       res.status(400).json({
         status: 'error',
@@ -134,8 +200,48 @@ router.post<{ postId: string }, VoteSubmissionResponse | { status: string; messa
         return;
       }
 
-      // Check if user already voted
-      const existingVote = await redis.get(`user_vote:${postId}:${userId}`);
+      // Check if this is a jury voting post and if voting period has expired
+      if (postData && postData.votingEndTime) {
+        const { checkVotingExpiration, validateUserCanVote } = await import('./core/voteUtils');
+        
+        const votingEndTime = typeof postData.votingEndTime === 'number' ? postData.votingEndTime : parseInt(postData.votingEndTime as string);
+        const isExpired = await checkVotingExpiration(postId, votingEndTime);
+        if (isExpired) {
+          res.status(400).json({
+            status: 'error',
+            message: 'Voting period has ended',
+          });
+          return;
+        }
+        
+        // Validate user can vote
+        const validation = await validateUserCanVote(postId, userId);
+        if (!validation.canVote) {
+          res.status(400).json({
+            status: 'error',
+            message: validation.reason || 'Cannot vote',
+          });
+          return;
+        }
+      } else {
+        // For posts without explicit voting end time, check if voting was closed by scoring system
+        const votingClosed = await redis.hGet(`votes:${postId}`, 'votingClosed');
+        if (votingClosed === 'true') {
+          res.status(400).json({
+            status: 'error',
+            message: 'Voting period has ended',
+          });
+          return;
+        }
+      }
+
+      // Use atomic transaction to prevent race conditions and duplicate votes
+      const voteKey = `votes:${postId}`;
+      const userVoteKey = `user_vote:${postId}:${userId}`;
+      const votersSetKey = `voters:${postId}`;
+      
+      // Double-check if user already voted (race condition protection)
+      const existingVote = await redis.hGet(userVoteKey, 'vote');
       if (existingVote) {
         res.status(400).json({
           status: 'error',
@@ -144,20 +250,45 @@ router.post<{ postId: string }, VoteSubmissionResponse | { status: string; messa
         return;
       }
 
-      // Record vote
-      await redis.set(`user_vote:${postId}:${userId}`, vote);
-      await redis.hincrby(`votes:${postId}`, vote === 'guilty' ? 'guilty' : 'notGuilty', 1);
+      // Get username for juror scoring
+      const username = await reddit.getCurrentUsername();
+      
+      // Record the user's vote with timestamp
+      await redis.hSet(userVoteKey, {
+        vote: vote,
+        timestamp: Date.now().toString(),
+        postId: postId,
+        username: username || 'anonymous',
+      });
+      
+      // Add user to voters hash (for tracking unique voters)
+      await redis.hSet(votersSetKey, { [userId]: '1' });
+      
+      // Increment vote count
+      const voteField = vote === 'guilty' ? 'guilty' : 'notGuilty';
+      await redis.hIncrBy(voteKey, voteField, 1);
+      
+      // Update last vote timestamp
+      await redis.hSet(voteKey, { lastVoteAt: Date.now().toString() });
+      
+      // Set expiration for vote data (30 days)
+      const expireTime = 30 * 24 * 60 * 60;
+      await redis.expire(userVoteKey, expireTime);
+      await redis.expire(votersSetKey, expireTime);
+      await redis.expire(voteKey, expireTime);
 
       // Get current vote counts
-      const voteData = await redis.hmget(`votes:${postId}`, 'guilty', 'notGuilty');
+      const voteData = await redis.hMGet(voteKey, ['guilty', 'notGuilty', 'votingClosed']);
       const guilty = parseInt(voteData[0] || '0');
       const notGuilty = parseInt(voteData[1] || '0');
+      const votingClosed = voteData[2] === 'true';
 
       const currentVotes: VoteData = {
         guilty,
         notGuilty,
         totalVotes: guilty + notGuilty,
         userVote: vote,
+        votingClosed,
       };
 
       res.json({
@@ -179,7 +310,7 @@ router.post<{ postId: string }, VoteSubmissionResponse | { status: string; messa
 router.get<{ postId: string }, VoteData | { status: string; message: string }>(
   '/api/votes',
   async (_req, res): Promise<void> => {
-    const { postId } = context;
+    const { postId, postData } = context;
     if (!postId) {
       res.status(400).json({
         status: 'error',
@@ -191,21 +322,36 @@ router.get<{ postId: string }, VoteData | { status: string; message: string }>(
     try {
       const userId = context.userId || 'anonymous';
       
-      // Get vote counts and user's vote
-      const [voteData, userVote] = await Promise.all([
-        redis.hmget(`votes:${postId}`, 'guilty', 'notGuilty'),
-        redis.get(`user_vote:${postId}:${userId}`)
+      // Check if voting period has expired and process if needed
+      if (postData && postData.votingEndTime) {
+        const votingEndTime = typeof postData.votingEndTime === 'number' ? postData.votingEndTime : parseInt(postData.votingEndTime as string);
+        await checkAndProcessExpiredVoting(postId, votingEndTime);
+      }
+      
+      // Get vote counts, user's vote, and voting status
+      const [voteData, userVoteData, votersData] = await Promise.all([
+        redis.hMGet(`votes:${postId}`, ['guilty', 'notGuilty', 'votingClosed']),
+        redis.hGet(`user_vote:${postId}:${userId}`, 'vote'),
+        redis.hGetAll(`voters:${postId}`)
       ]);
 
       const guilty = parseInt(voteData[0] || '0');
       const notGuilty = parseInt(voteData[1] || '0');
+      const votingClosed = voteData[2] === 'true';
 
       const votes: VoteData = {
         guilty,
         notGuilty,
         totalVotes: guilty + notGuilty,
-        userVote: userVote as 'guilty' | 'not_guilty' | undefined,
+        ...(userVoteData && { userVote: userVoteData as 'guilty' | 'not_guilty' }),
+        votingClosed,
       };
+
+      // Verify vote count integrity
+      const actualTotalVotes = Object.keys(votersData || {}).length;
+      if (Math.abs(votes.totalVotes - actualTotalVotes) > 1) {
+        console.warn(`Vote count mismatch for post ${postId}: calculated=${votes.totalVotes}, actual=${actualTotalVotes}`);
+      }
 
       res.json(votes);
     } catch (error) {
@@ -213,6 +359,144 @@ router.get<{ postId: string }, VoteData | { status: string; message: string }>(
       res.status(500).json({
         status: 'error',
         message: 'Failed to fetch votes',
+      });
+    }
+  }
+);
+
+// Get leaderboards
+router.get<{}, LeaderboardResponse | { status: string; message: string }>(
+  '/api/leaderboards',
+  async (_req, res): Promise<void> => {
+    try {
+      const [attorneys, jurors] = await Promise.all([
+        getAttorneyLeaderboard(10),
+        getJurorLeaderboard(10)
+      ]);
+
+      // Convert to the expected format
+      const attorneyEntries = attorneys.map((attorney, index) => ({
+        username: attorney.username,
+        score: attorney.totalScore,
+        rank: index + 1,
+      }));
+
+      const jurorEntries = jurors.map((juror, index) => ({
+        username: juror.username,
+        score: juror.totalPoints,
+        rank: index + 1,
+      }));
+
+      res.json({
+        type: 'leaderboard',
+        attorneys: attorneyEntries,
+        jurors: jurorEntries,
+      });
+    } catch (error) {
+      console.error('Leaderboard fetch error:', error);
+      res.status(500).json({
+        status: 'error',
+        message: 'Failed to fetch leaderboards',
+      });
+    }
+  }
+);
+
+// Get user's personal scores
+router.get<{}, { status: string; data?: any; message?: string }>(
+  '/api/user-scores',
+  async (_req, res): Promise<void> => {
+    try {
+      const userId = context.userId || 'anonymous';
+      const username = await reddit.getCurrentUsername();
+
+      // Get attorney score data
+      const attorneyData = await redis.hMGet(`attorney:${userId}`, ['totalScore', 'casesDefended', 'casesWon']);
+      const attorneyScore = {
+        totalScore: parseInt(attorneyData[0] || '0'),
+        casesDefended: parseInt(attorneyData[1] || '0'),
+        casesWon: parseInt(attorneyData[2] || '0'),
+        winRate: 0,
+      };
+      if (attorneyScore.casesDefended > 0) {
+        attorneyScore.winRate = Math.round((attorneyScore.casesWon / attorneyScore.casesDefended) * 10000) / 100;
+      }
+
+      // Get juror score data
+      const jurorData = await redis.hMGet(`juror:${userId}`, ['totalPoints', 'casesJudged', 'correctVotes']);
+      const jurorScore = {
+        totalPoints: parseInt(jurorData[0] || '0'),
+        casesJudged: parseInt(jurorData[1] || '0'),
+        correctVotes: parseInt(jurorData[2] || '0'),
+        accuracy: 0,
+      };
+      if (jurorScore.casesJudged > 0) {
+        jurorScore.accuracy = Math.round((jurorScore.correctVotes / jurorScore.casesJudged) * 10000) / 100;
+      }
+
+      // Get ranks from leaderboards
+      const [attorneyRank, jurorRank] = await Promise.all([
+        redis.zRank('leaderboard:attorneys', userId),
+        redis.zRank('leaderboard:jurors', userId)
+      ]);
+
+      res.json({
+        status: 'success',
+        data: {
+          username: username || 'anonymous',
+          attorney: {
+            ...attorneyScore,
+            rank: attorneyRank !== null && attorneyRank !== undefined ? attorneyRank + 1 : null,
+          },
+          juror: {
+            ...jurorScore,
+            rank: jurorRank !== null && jurorRank !== undefined ? jurorRank + 1 : null,
+          },
+        },
+      });
+    } catch (error) {
+      console.error('User scores fetch error:', error);
+      res.status(500).json({
+        status: 'error',
+        message: 'Failed to fetch user scores',
+      });
+    }
+  }
+);
+
+// Get vote statistics (for debugging/admin purposes)
+router.get<{ postId: string }, { status: string; data?: any; message?: string }>(
+  '/api/vote-stats',
+  async (_req, res): Promise<void> => {
+    const { postId } = context;
+    if (!postId) {
+      res.status(400).json({
+        status: 'error',
+        message: 'postId is required',
+      });
+      return;
+    }
+
+    try {
+      const [voteData, votersData] = await Promise.all([
+        redis.hGetAll(`votes:${postId}`),
+        redis.hGetAll(`voters:${postId}`)
+      ]);
+
+      res.json({
+        status: 'success',
+        data: {
+          voteData,
+          uniqueVoters: Object.keys(votersData || {}).length,
+          votersList: Object.keys(votersData || {}).slice(0, 10), // Only show first 10 for privacy
+          totalVotersInList: Object.keys(votersData || {}).length,
+        },
+      });
+    } catch (error) {
+      console.error(`Vote stats error for post ${postId}:`, error);
+      res.status(500).json({
+        status: 'error',
+        message: 'Failed to fetch vote statistics',
       });
     }
   }
