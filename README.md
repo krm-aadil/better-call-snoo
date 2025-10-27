@@ -1,41 +1,41 @@
 # Better Call Snoo
 
-**Better Call Snoo** is an Ace Attorney-inspired legal defense game built for Reddit using the Devvit platform. This interactive web application transforms Reddit into a virtual courtroom where players defend quirky cases with creative arguments while the community acts as jury, creating an engaging social experience with competitive elements.
+**Better Call Snoo** is an Ace Attorney-inspired legal defense game built for Reddit using the Devvit platform. This interactive web application transforms Reddit into a virtual courtroom where players defend quirky cases with creative arguments while the community acts as jury, creating an engaging social experience with competitive elements and real-time gameplay.
 
 ## What is Better Call Snoo?
 
-Better Call Snoo is a daily legal defense game that brings the excitement of courtroom drama to Reddit. Players take on the role of defense attorneys, crafting creative arguments for absurd legal cases, while the community serves as the jury deciding the fate of each defense.
+Better Call Snoo is a fully-featured daily legal defense game that brings the excitement of courtroom drama directly to Reddit. Players take on dual roles as defense attorneys crafting creative arguments for absurd legal cases, and as community jurors deciding the fate of each defense through an immersive voting experience.
 
 **Core Game Features:**
-- **Daily Docket System**: Browse 5 randomly selected funny legal cases each day from a library of 50+ absurd scenarios, refreshed every 24 hours with date-based deterministic selection
-- **Creative Defense Submission**: Write compelling 250-character defense arguments with real-time character counting and validation
-- **Community Jury Voting**: Vote GUILTY or NOT GUILTY on defense submissions with immersive courtroom interface featuring authentic gavel sound effects
-- **Live Vote Visualization**: Watch the animated Scales of Justice tip dramatically in real-time as votes are cast, with enhanced visual feedback
-- **Dynamic Character System**: Snoo characters change poses based on vote percentages (neutral, confident, worried, celebrating, defeated) with smooth animations
-- **Real-Time Updates**: Live vote polling every 5 seconds with connection status indicators and update timestamps
-- **Mobile-First Design**: Fully responsive interface optimized for Reddit's mobile user base with touch-friendly controls
-- **Dual Scoring System**: Earn points as both attorneys (defense creators) and jurors (community voters) with detailed scoring algorithms
-- **Competitive Leaderboards**: Track top-performing attorneys and jurors across the community
+- **Daily Docket System**: Browse 5 randomly selected funny legal cases each day from a library of 50+ absurd scenarios, refreshed every 24 hours with date-based deterministic selection and professional case file presentation
+- **Creative Defense Submission**: Write compelling 250-character defense arguments with real-time character counting, color-coded validation, and automatic Reddit post creation for community voting
+- **Immersive Jury Voting**: Vote GUILTY or NOT GUILTY on defense submissions through a fully-realized courtroom interface featuring authentic gavel sound effects, dynamic character animations, and live vote visualization
+- **Live Scales of Justice**: Watch the animated balance scales tip dramatically in real-time as votes are cast, with smooth percentage displays and enhanced visual feedback that responds instantly to community sentiment
+- **Dynamic Character System**: Reddit Snoo characters (Victim Snoo and Lawyer Snoo) change poses based on real-time vote percentages with five distinct emotional states: neutral, confident, worried, celebrating, and defeated
+- **Real-Time Updates**: Live vote polling every 5 seconds with comprehensive connection status indicators, update timestamps, and seamless data synchronization across all users
+- **Mobile-First Design**: Fully responsive interface optimized for Reddit's mobile user base with touch-friendly controls, no horizontal scrolling, and accessibility compliance
+- **Comprehensive Scoring System**: Dual-track point system rewarding both attorneys (defense creators) and jurors (community voters) with sophisticated algorithms and win bonuses
+- **Hall of Justice Leaderboards**: Real-time competitive rankings tracking top-performing attorneys and jurors with detailed statistics, personal performance metrics, and community recognition
 
-The game features a rich Ace Attorney-inspired aesthetic with Reddit's beloved Snoo characters serving as the defendant (Victim Snoo) and defense attorney (Lawyer Snoo), complete with dynamic poses, courtroom sound effects, and authentic visual styling including custom fonts and animations.
+The game features a meticulously crafted Ace Attorney-inspired aesthetic with Reddit's beloved Snoo characters serving as courtroom participants, complete with dynamic pose animations, authentic courtroom sound effects, professional legal styling, and immersive visual elements that transform Reddit into a virtual courthouse experience.
 
 ## What Makes This Game Innovative?
 
-1. **Reddit-Native Gaming Experience**: Runs entirely within Reddit posts using Devvit's web platform - no external websites, downloads, or separate accounts required
+1. **Seamless Reddit Integration**: Runs entirely within Reddit posts using Devvit's web platform with zero external dependencies. The game creates a native Reddit experience that feels like a natural extension of the platform, with automatic user authentication, post creation, and community integration that requires no additional accounts or downloads.
 
-2. **Community-Driven Content Creation**: Each defense submission automatically creates a new Reddit post, turning the entire community into active participants in the game ecosystem
+2. **Self-Sustaining Content Ecosystem**: Each defense submission automatically generates a new Reddit post for community voting, creating an infinite content loop where players become both creators and consumers. This revolutionary approach turns the entire community into active content generators, ensuring fresh material and sustained engagement without requiring constant developer intervention.
 
-3. **Daily Fresh Content with Algorithmic Variety**: Features 50+ pre-written absurd legal cases (from "The Great Cookie Caper" to "Quantum Entanglement Harassment") with 5 new cases selected daily using date-based randomization
+3. **Algorithmic Daily Variety**: Features 50+ meticulously crafted absurd legal cases spanning categories from "The Great Cookie Caper" to "Interdimensional Traffic Violations," with 5 new cases selected daily using date-based deterministic randomization. This ensures consistent variety without repetition while maintaining fairness across all players and time zones.
 
-4. **Dual-Role Gameplay**: Players can simultaneously be attorneys (creating defenses) and jurors (voting on others' defenses), creating multiple engagement pathways
+4. **Revolutionary Dual-Role Gameplay**: Players simultaneously participate as attorneys (creating defenses) and jurors (voting on others' defenses), creating multiple engagement pathways that accommodate different skill sets and participation preferences. This dual participation model ensures sustained engagement regardless of creative writing ability or time availability.
 
-5. **Real-Time Social Voting**: Live vote updates with animated visual feedback through the Scales of Justice, creating immediate community engagement
+5. **Real-Time Social Voting with Immersive Feedback**: Live vote updates every 5 seconds with dramatically animated Scales of Justice that tip based on community sentiment, plus dynamic Reddit Snoo character poses that react to vote percentages in real-time. The sophisticated visual feedback system includes connection status indicators, update timestamps, and smooth animations that create immediate engagement rewards.
 
-6. **Mobile-First Design**: Fully responsive interface optimized for Reddit's predominantly mobile user base, with touch-friendly controls and no horizontal scrolling
+6. **Authentic Ace Attorney Recreation**: Complete visual and audio recreation of the beloved courtroom game series, featuring custom Reddit Snoo character sprites with five distinct emotional poses, authentic gavel sound effects using Web Audio API, professional courtroom backgrounds, and game-accurate typography that transforms Reddit into a virtual Phoenix Wright courtroom experience.
 
-7. **Gamified Social Interaction**: Transforms Reddit's commenting and voting mechanics into structured gameplay with scoring, leaderboards, and competitive elements
+7. **Mobile-First Accessibility Excellence**: Fully optimized for Reddit's predominantly mobile user base with touch-friendly controls, zero horizontal scrolling, proper viewport handling, comprehensive screen reader support, full keyboard navigation, ARIA labels, semantic HTML structure, and reduced motion options for users with vestibular disorders.
 
-8. **Accessibility-First Approach**: Includes audio feedback (gavel sounds), high contrast support, reduced motion options, and semantic HTML structure
+8. **Sophisticated Competitive Framework**: Dual scoring algorithms reward both creative defense writing and accurate jury predictions with complex point calculations, win bonuses, and accuracy tracking. Real-time leaderboards create ongoing competition and community recognition, while the 24-hour voting periods ensure fair participation across global time zones.
 
 ## Technology Stack
 
@@ -76,7 +76,7 @@ Each case includes detailed crime descriptions, difficulty ratings, and thematic
 
 #### 1. **Access the Game**
 - Look for "Better Call Snoo" posts in participating subreddits
-- Click the "Play" button on the splash screen to enter the full-screen courtroom experience
+- Click the splash screen to enter the full-screen courtroom experience
 - The game loads directly in your browser - no downloads or separate accounts needed
 
 #### 2. **Browse the Daily Docket**
@@ -84,90 +84,110 @@ Each case includes detailed crime descriptions, difficulty ratings, and thematic
 - **Case Information**: Each case displays:
   - Quirky case title (e.g., "The Case of the Quantum Cat Burglar")
   - Specific crime description (e.g., "Accused of stealing Schrödinger's cat while it was both alive and dead")
-  - Difficulty level (Easy/Medium/Hard) with color-coded badges
-  - Category tags (Theft, Fraud, Physics Violation, etc.)
-  - Unique case file numbers and thematic icons
+  - Difficulty level (Easy/Medium/Hard) with color-coded badges (green/yellow/red)
+  - Category tags (Theft, Fraud, Physics Violation, etc.) with thematic emoji icons
+  - Unique case file numbers and professional case file styling
+- **Navigation**: Access the "🏆 Hall of Justice" leaderboards from the main docket
 - **Case Selection**: Click "⚖️ DEFEND" on any case that interests you
-- **Mobile Optimization**: Scroll through cases without horizontal scrolling, optimized for touch interaction
+- **Mobile Optimization**: Responsive grid layout with no horizontal scrolling, optimized for touch interaction
 
 #### 3. **Submit Your Defense**
 - **Defense Writing Interface**: 
-  - Single text input field with 250-character limit
+  - Clean, focused text area with 250-character limit
   - Real-time character counter with color-coded feedback (green → yellow → red as you approach the limit)
-  - Case details displayed above for reference
+  - Case details displayed above for reference including title, crime, difficulty, and category
+  - Form validation prevents empty submissions
 - **Character Limit Strategy**: The 250-character limit encourages:
-  - Witty, concise arguments
-  - Creative legal reasoning
+  - Witty, concise arguments that get straight to the point
+  - Creative legal reasoning and wordplay
   - Memorable one-liners that stick with voters
 - **Submission Process**: 
   - Click "Submit Defense" to create a new Reddit post automatically
   - Your defense becomes a separate post for community voting
-  - Success confirmation with automatic redirect back to Daily Docket
+  - Success confirmation with automatic redirect back to Daily Docket after 3 seconds
+  - Error handling for failed submissions with clear feedback
 
 #### 4. **Participate in Jury Voting**
-- **Courtroom Interface**: 
-  - Two-panel layout matching Ace Attorney games exactly
-  - Victim Snoo (defendant) and Lawyer Snoo (attorney) character sprites
-  - Dynamic character poses that change based on vote percentages:
-    - **Neutral**: Equal or no votes
-    - **Confident**: Leading in votes
-    - **Worried**: Losing in votes  
-    - **Celebrating**: Winning by large margin (60%+)
-    - **Defeated**: Losing by large margin (60%+)
-- **Voting Process**:
-  - Read the case details and defense argument in styled text boxes
-  - Click either "GUILTY" or "NOT GUILTY" button
-  - Hear authentic gavel sound effect upon voting
-  - Cannot change vote once submitted
-- **Live Results**: Watch the Scales of Justice animate and tip based on real-time vote percentages
+- **Immersive Courtroom Interface**: 
+  - Full Ace Attorney-inspired courtroom layout with dramatic gradient backgrounds (yellow-orange-red) and authentic courtroom atmosphere
+  - Victim Snoo (defendant) and Lawyer Snoo (attorney) character sprites positioned on opposite sides with professional courtroom styling
+  - Dynamic character poses that change based on real-time vote percentages with smooth CSS animations and transitions:
+    - **Neutral**: Equal votes or no votes cast yet - characters in relaxed, balanced poses
+    - **Confident**: Leading in votes (50-60%) with steady, confident stances and subtle animation cycles
+    - **Worried**: Losing in votes (40-50%) with nervous, fidgeting animations and concerned expressions
+    - **Celebrating**: Winning by large margin (60%+) with victory poses, raised arms, and celebratory animations
+    - **Defeated**: Losing by large margin (60%+) with dejected, slumped poses and disappointed expressions
+- **Enhanced Voting Process**:
+  - Case details and defense argument displayed in styled courtroom text boxes with professional legal typography and quotation styling
+  - Large, prominent "GUILTY" and "NOT GUILTY" voting buttons with hover effects, focus states, and visual feedback
+  - Authentic gavel sound effect upon voting using Web Audio API with graceful fallback handling for audio failures
+  - Vote immediately recorded with atomic Redis transactions and cannot be changed to prevent manipulation
+  - Instant visual feedback with character pose updates, vote counter changes, and scales animation
+  - Real-time connection status indicators (connected/connecting/error/disconnected) with colored status dots and descriptive text
+  - Vote update timestamps showing last refresh time for transparency
+- **Live Results Visualization**: Watch the animated Scales of Justice tip dramatically based on real-time vote percentages with smooth transitions, gradient styling, and precise percentage displays that update every 5 seconds
 
 #### 5. **Track Your Performance**
-- **Dual Scoring System**:
+- **Comprehensive Dual Scoring System**:
   
   **As an Attorney (Defense Creator):**
-  - **Base Score**: (Not Guilty votes × 2) - (Guilty votes)
-  - **Victory Bonus**: +500 points if your defense achieves majority "Not Guilty" verdict (>50%)
-  - **Total Score**: Cumulative score across all your defense submissions
+  - **Base Score Calculation**: (Not Guilty votes × 2) - (Guilty votes) - rewards persuasive arguments that sway the community
+  - **Victory Bonus**: +500 points if your defense achieves majority "Not Guilty" verdict (>50%) - significant reward for winning cases
+  - **Total Score**: Cumulative score across all your defense submissions with no negative penalties
+  - **Detailed Statistics**: Track cases defended, cases won, win rate percentage, and individual case performance
   
   **As a Juror (Community Voter):**
-  - **Accuracy Points**: +10 points for each vote that matches the final majority verdict
-  - **No Penalty**: 0 points (not negative) for minority votes
-  - **Total Score**: Sum of all your accurate jury predictions
+  - **Accuracy Points**: +10 points for each vote that matches the final majority verdict after 24-hour voting period
+  - **No Penalty System**: 0 points (not negative) for minority votes - encourages honest voting without fear of punishment
+  - **Total Score**: Sum of all your accurate jury predictions across all cases you've voted on
+  - **Performance Metrics**: Track cases judged, correct votes, accuracy percentage, and voting consistency
 
-- **Leaderboards**: 
-  - **Top Attorneys**: Ranked by total defense scores
-  - **Top Jurors**: Ranked by total accuracy points
-  - Real-time updates as votes are cast and cases conclude
+- **Hall of Justice Leaderboards**: 
+  - **Top Attorneys Leaderboard**: Ranked by total defense scores with usernames, point totals, and win statistics displayed with trophy icons (🥇🥈🥉) for top 3 positions
+  - **Top Jurors Leaderboard**: Ranked by total accuracy points with voting statistics and accuracy percentages, featuring color-coded ranking badges
+  - **Personal Performance Dashboard**: Your own statistics displayed prominently with rank positions, detailed breakdowns, and progress tracking
+  - **Real-Time Updates**: Leaderboards refresh automatically as votes are cast and cases conclude, with live ranking changes
+  - **Accessible Navigation**: Easily accessible via the "🏆 Hall of Justice" button from the main Daily Docket interface
+  - **Refresh Functionality**: Manual refresh button to get the latest rankings and ensure data accuracy
 
-#### 6. **Advanced Features**
-- **Real-Time Updates**: Vote percentages update every 5 seconds without page refresh
-- **24-Hour Voting Periods**: Each defense post remains active for voting for 24 hours
-- **Mobile-First Design**: Full functionality on smartphones and tablets
-- **Accessibility Features**: 
-  - Screen reader support with ARIA labels
-  - High contrast mode compatibility
+#### 6. **Advanced Features & Real-Time Experience**
+- **Sophisticated Live Updates**: Vote percentages and character poses update every 5 seconds without page refresh using optimized polling with connection management
+- **Connection Status Management**: Visual indicators show real-time connection status with colored dots and descriptive text (🟢 connected, 🟡 connecting, 🔴 error, ⚫ disconnected)
+- **Vote Update Indicators**: Visual feedback system showing total vote count changes with smooth animations and update timestamps for transparency
+- **24-Hour Voting Periods**: Each defense post remains active for voting for exactly 24 hours with automatic case closure and final verdict determination
+- **Automatic Scoring**: Final verdicts determined by majority vote after voting period ends with immediate score calculation and leaderboard updates
+- **Mobile-First Responsive Design**: Full functionality on smartphones and tablets with touch-optimized controls, dynamic viewport height support, and no horizontal scrolling
+- **Comprehensive Accessibility Features**: 
+  - Full screen reader support with ARIA labels, semantic HTML structure, and descriptive alt text
+  - Complete keyboard navigation support for all interactive elements with visible focus indicators
+  - Skip links for efficient navigation and content jumping
+  - High contrast mode compatibility for visual accessibility
   - Reduced motion options for users with vestibular disorders
-  - Keyboard navigation support
+  - Role-based announcements for dynamic content changes
+  - Proper heading hierarchy and landmark navigation
 
 ### Pro Tips for Success
 
 **For Aspiring Attorneys:**
-- **Be Creative**: The most memorable defenses often win, regardless of case difficulty
-- **Use Humor**: Reddit loves witty, clever arguments that make people laugh
-- **Know Your Audience**: Consider what would make the Reddit community vote "Not Guilty"
-- **Character Economy**: Make every character count in your 250-character limit
-- **Study Winners**: Look at successful defenses to understand what resonates
+- **Be Creative & Original**: The most memorable and unique defenses often win, regardless of case difficulty
+- **Use Reddit Humor**: Leverage memes, references, and wit that resonates with Reddit's community culture
+- **Know Your Audience**: Consider what arguments would make the Reddit community vote "Not Guilty"
+- **Character Economy**: Make every character count in your 250-character limit - edit ruthlessly
+- **Study Successful Defenses**: Observe winning arguments to understand what resonates with voters
+- **Timing Matters**: Submit defenses early in the day for maximum voting exposure and engagement
 
 **For Effective Jurors:**
-- **Read Carefully**: Consider both the absurdity of the crime and creativity of the defense
-- **Vote Your Conscience**: Don't just follow the crowd - vote based on how convincing you find the argument
-- **Consistency Pays**: Accurate voting over time builds your juror score
+- **Read Thoroughly**: Consider both the absurdity of the crime and the creativity of the defense argument
+- **Vote Your Conscience**: Don't just follow the crowd - vote based on how convincing you personally find the argument
+- **Consistency Builds Score**: Accurate voting over time builds your juror score and leaderboard position
 - **Engage Early**: Vote on defenses when they're fresh for maximum community impact
+- **Consider Context**: Factor in both legal reasoning and entertainment value when making decisions
 
 **Strategic Considerations:**
-- **Case Difficulty**: All cases offer the same scoring potential, so choose based on your creative strengths
-- **Timing**: Submit defenses early in the day for maximum voting exposure
-- **Community Engagement**: Participate in both roles (attorney and juror) for maximum point potential
+- **Case Difficulty Balance**: All cases offer the same scoring potential, so choose based on your creative strengths rather than difficulty
+- **Dual Participation**: Engage in both roles (attorney and juror) for maximum point earning potential
+- **Community Timing**: Monitor when the community is most active for optimal engagement
+- **Long-term Strategy**: Build reputation over time through consistent quality submissions and accurate voting
 
 ## Development Setup
 
@@ -205,22 +225,34 @@ Each case includes detailed crime descriptions, difficulty ratings, and thematic
 
 ### Current Implementation Status
 
-**✅ Completed Features:**
-- **Daily Docket System**: 5 random cases daily with 50+ predefined funny legal scenarios including categories like "Theft," "Public Nuisance," "Fraud," "Quantum Crime," and "Physics Violation"
-- **Defense Submission**: 250-character limit with real-time counter, color-coded feedback, and form validation
-- **Custom Post Creation**: Automatic Reddit post generation for each defense submission with success/error handling
-- **Jury Voting Interface**: Full courtroom layout with character sprites, voting buttons, and immersive Ace Attorney-style presentation
-- **Dynamic Character System**: Snoo poses change based on vote percentages (neutral, confident, worried, celebrating, defeated) with smooth transitions
-- **Audio System**: Gavel sound effects with Web Audio API integration and graceful fallback handling
-- **Real-Time Vote Updates**: Live polling every 5 seconds with connection status indicators and last update timestamps
-- **Scales of Justice Animation**: Enhanced visual balance representation with dramatic tipping animations, gradient styling, and real-time percentage displays
-- **Mobile-Responsive Design**: Optimized for mobile devices with touch-friendly controls, no horizontal scrolling, and dynamic viewport height support
-- **Ace Attorney Styling**: Custom CSS with courtroom aesthetics, game-like fonts, and authentic visual elements
-- **Vote Update Indicators**: Visual feedback system showing when new votes are cast with animation triggers
-- **Connection Management**: Real-time connection status with visual indicators (connected, connecting, error, disconnected states)
-- **Scoring System**: Complete attorney and juror point calculation algorithms with 24-hour voting periods
-- **Leaderboard System**: Top attorneys and jurors ranking displays with comprehensive statistics
-- **Final Verdict System**: Automatic case closure and majority verdict determination
+**✅ Fully Completed & Production-Ready Features:**
+- **Daily Docket System**: Complete implementation with 5 random cases daily from 50+ predefined funny legal scenarios, professional case file styling, difficulty badges (easy/medium/hard), category icons, and date-based deterministic selection with Redis caching
+- **Defense Submission System**: Full-featured 250-character limit interface with real-time character counter, color-coded validation feedback (green→yellow→red), form validation, success/error handling, and automatic Reddit post creation for community voting
+- **Custom Post Creation**: Seamless automatic Reddit post generation for each defense submission with comprehensive success/error handling, user feedback, and proper post metadata integration
+- **Immersive Jury Voting Interface**: Complete courtroom experience with full Ace Attorney-style presentation, character sprites, voting buttons, authentic courtroom atmosphere, and professional legal styling with gradient backgrounds
+- **Dynamic Character System**: Sophisticated Reddit Snoo pose system with 5 distinct emotional states (neutral, confident, worried, celebrating, defeated) that change based on real-time vote percentages with smooth CSS animations and transition effects
+- **Professional Audio System**: Gavel sound effects with Web Audio API integration, graceful fallback handling, user interaction-based initialization, and proper audio context management
+- **Real-Time Vote Updates**: Advanced live polling system updating every 5 seconds with connection status indicators, last update timestamps, atomic Redis vote transactions, and seamless data synchronization
+- **Animated Scales of Justice**: Enhanced visual balance representation with dramatic tipping animations, gradient styling, real-time percentage displays, smooth transitions, and responsive design
+- **Mobile-First Responsive Design**: Fully optimized for mobile devices with touch-friendly controls, zero horizontal scrolling, dynamic viewport height support, accessibility compliance, and cross-device compatibility
+- **Authentic Ace Attorney Styling**: Complete visual recreation with custom CSS, courtroom aesthetics, game-accurate fonts, authentic visual elements, immersive animations, and professional legal document styling
+- **Vote Update Indicators**: Comprehensive visual feedback system showing when new votes are cast with animation triggers, real-time connection status, and transparent update tracking
+- **Connection Management**: Robust real-time connection status with visual indicators (connected/connecting/error/disconnected states), automatic reconnection handling, and user-friendly status messages
+- **Complete Scoring System**: Full attorney and juror point calculation algorithms with 24-hour voting periods, win bonuses (+500 for majority Not Guilty), accuracy tracking, and automatic score processing
+- **Hall of Justice Leaderboards**: Comprehensive ranking system for top attorneys and jurors with detailed statistics, personal performance tracking, real-time updates, trophy icons, and refresh functionality
+- **Final Verdict System**: Automatic case closure and majority verdict determination with proper scoring attribution, leaderboard updates, and 24-hour voting period management
+- **Comprehensive Accessibility**: Full screen reader support, complete keyboard navigation, ARIA labels, semantic HTML structure, high contrast mode compatibility, reduced motion options, and skip links
+
+### Game Flow Architecture
+
+The game operates through four main screens managed by the React App component:
+
+1. **Daily Docket (`DailyDocket.tsx`)**: Main hub displaying 5 daily cases with case file styling, difficulty badges, category icons, and leaderboard access
+2. **Defense Form (`DefenseForm.tsx`)**: Character-limited defense submission interface with real-time validation and success feedback
+3. **Jury Voting (`JuryVoting.tsx`)**: Immersive courtroom with dynamic character sprites, voting buttons, and live results visualization
+4. **Leaderboard (`Leaderboard.tsx`)**: Hall of Justice displaying top attorneys and jurors with personal performance statistics
+
+The game state is managed through custom React hooks (`useGame`, `useJuryVoting`, `useLeaderboard`) that handle API communication, real-time updates, and state transitions between screens.
 
 ### API Endpoints
 - `GET /api/init`: Initialize game state, fetch daily cases, and get user authentication
@@ -245,14 +277,15 @@ Each case includes detailed crime descriptions, difficulty ratings, and thematic
 - **Audio Management**: Web Audio API integration with graceful fallback handling
 
 ### Technical Implementation
-- **React Hooks**: Custom hooks for game state (`useGame`), defense submission (`useDefenseSubmission`), jury voting (`useJuryVoting`), leaderboards (`useLeaderboard`), and real-time updates (`useRealTimeUpdates`)
+- **React Hooks**: Custom hooks for game state (`useGame`), defense submission (`useDefenseSubmission`), jury voting (`useJuryVoting`), and leaderboards (`useLeaderboard`)
 - **Component Architecture**: Modular components for Daily Docket, Defense Form, Jury Voting, Scales of Justice, Character Sprites, and Leaderboards
-- **State Management**: Centralized game state with proper loading and error handling across multiple screens
+- **State Management**: Centralized game state with proper loading and error handling across multiple screens using React's useState and useEffect
 - **Real-Time Updates**: Polling-based live updates for vote counts and percentages with connection status indicators
 - **Mobile Optimization**: Responsive design with mobile-first approach, touch optimization, and dynamic viewport height support
 - **Accessibility**: ARIA labels, semantic HTML, keyboard navigation, screen reader support, and reduced motion support
 - **Audio System**: Web Audio API with gavel sound effects and graceful fallback handling
 - **Scoring Algorithms**: Complex point calculations for both attorneys and jurors with automatic processing
+- **CSS Animations**: Custom keyframe animations for character poses, UI transitions, and visual feedback using Tailwind CSS and custom CSS
 
 The complete game specification can be found in `.kiro/specs/better-call-snoo/`.
 

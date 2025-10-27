@@ -38,15 +38,17 @@ const LeaderboardEntryComponent: React.FC<LeaderboardEntryProps> = ({ entry, typ
   };
 
   return (
-    <div 
+    <div
       className={`flex items-center justify-between p-3 rounded-lg mobile-spacing ${
-        entry.rank <= 3 ? 'bg-gradient-to-r from-yellow-50 to-amber-50 border-2 border-yellow-200' : 'bg-gray-50'
+        entry.rank <= 3
+          ? 'bg-gradient-to-r from-yellow-50 to-amber-50 border-2 border-yellow-200'
+          : 'bg-gray-50'
       }`}
       role="listitem"
       aria-label={`Rank ${entry.rank}: ${entry.username} with ${entry.score} points`}
     >
       <div className="flex items-center space-x-3">
-        <span 
+        <span
           className={`text-lg font-bold ${getRankColor(entry.rank)}`}
           aria-label={`Rank ${entry.rank}`}
         >
@@ -57,9 +59,7 @@ const LeaderboardEntryComponent: React.FC<LeaderboardEntryProps> = ({ entry, typ
         </span>
       </div>
       <div className="text-right">
-        <span className="font-bold text-lg text-gray-900 mobile-text">
-          {entry.score}
-        </span>
+        <span className="font-bold text-lg text-gray-900 mobile-text">{entry.score}</span>
         <span className="text-sm text-gray-600 ml-1">
           <span className="sr-only">{type === 'attorney' ? 'points' : 'points'}</span>
           <span aria-hidden="true">pts</span>
@@ -107,11 +107,11 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
       <a href="#leaderboard-content" className="skip-link">
         Skip to leaderboard content
       </a>
-      
+
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <header className="text-center mb-8">
-          <h1 
+          <h1
             id="leaderboard-content"
             className="text-5xl font-bold text-white ace-attorney-text mb-2 mobile-text"
             tabIndex={-1}
@@ -121,7 +121,10 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
           <p className="text-xl text-amber-200 mobile-text">
             The finest attorneys and most discerning jurors in the land
           </p>
-          <nav className="mt-4 space-x-4 flex flex-wrap justify-center gap-4" aria-label="Leaderboard navigation">
+          <nav
+            className="mt-4 space-x-4 flex flex-wrap justify-center gap-4"
+            aria-label="Leaderboard navigation"
+          >
             {onBack && (
               <button
                 onClick={onBack}
@@ -143,18 +146,21 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
 
         {/* User's Personal Scores */}
         {userScores && (
-          <section 
+          <section
             className="bg-gradient-to-r from-blue-800 to-purple-800 rounded-lg p-6 mb-8 border-2 border-gold-400 mobile-spacing"
             aria-labelledby="user-performance-heading"
           >
-            <h2 id="user-performance-heading" className="text-2xl font-bold text-white ace-attorney-text mb-4 text-center mobile-text">
+            <h2
+              id="user-performance-heading"
+              className="text-2xl font-bold text-white ace-attorney-text mb-4 text-center mobile-text"
+            >
               Your Performance
             </h2>
             <div className="grid gap-4 md:grid-cols-2">
               {/* User Attorney Stats */}
               <div className="bg-white bg-opacity-10 rounded-lg p-4 mobile-spacing">
-                <h3 className="text-lg font-bold text-amber-300 mb-2 mobile-text">As Attorney</h3>
-                <dl className="space-y-2 text-white">
+                <h3 className="text-lg font-bold text-black mb-2 mobile-text">As Attorney</h3>
+                <dl className="space-y-2 text-black">
                   <div className="flex justify-between mobile-text">
                     <dt>Total Score:</dt>
                     <dd className="font-bold">{userScores.attorney.totalScore}</dd>
@@ -183,7 +189,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
               {/* User Juror Stats */}
               <div className="bg-white bg-opacity-10 rounded-lg p-4 mobile-spacing">
                 <h3 className="text-lg font-bold text-amber-300 mb-2 mobile-text">As Juror</h3>
-                <dl className="space-y-2 text-white">
+                <dl className="space-y-2 text-black">
                   <div className="flex justify-between mobile-text">
                     <dt>Total Points:</dt>
                     <dd className="font-bold">{userScores.juror.totalPoints}</dd>
@@ -215,14 +221,18 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
         {/* Leaderboards */}
         <main className="grid gap-8 lg:grid-cols-2">
           {/* Top Attorneys */}
-          <section className="bg-white rounded-lg shadow-2xl overflow-hidden" aria-labelledby="attorneys-heading">
+          <section
+            className="bg-white rounded-lg shadow-2xl overflow-hidden"
+            aria-labelledby="attorneys-heading"
+          >
             <header className="bg-gradient-to-r from-blue-600 to-purple-600 p-6">
-              <h2 id="attorneys-heading" className="text-3xl font-bold text-white ace-attorney-text text-center mobile-text">
+              <h2
+                id="attorneys-heading"
+                className="text-3xl font-bold text-white ace-attorney-text text-center mobile-text"
+              >
                 <span aria-hidden="true">⚖️</span> Top Attorneys
               </h2>
-              <p className="text-blue-100 text-center mt-2 mobile-text">
-                Masters of legal defense
-              </p>
+              <p className="text-blue-100 text-center mt-2 mobile-text">Masters of legal defense</p>
             </header>
             <div className="p-6">
               {attorneys.length > 0 ? (
@@ -245,9 +255,15 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
           </section>
 
           {/* Top Jurors */}
-          <section className="bg-white rounded-lg shadow-2xl overflow-hidden" aria-labelledby="jurors-heading">
+          <section
+            className="bg-white rounded-lg shadow-2xl overflow-hidden"
+            aria-labelledby="jurors-heading"
+          >
             <header className="bg-gradient-to-r from-green-600 to-teal-600 p-6">
-              <h2 id="jurors-heading" className="text-3xl font-bold text-white ace-attorney-text text-center mobile-text">
+              <h2
+                id="jurors-heading"
+                className="text-3xl font-bold text-white ace-attorney-text text-center mobile-text"
+              >
                 <span aria-hidden="true">👨‍⚖️</span> Top Jurors
               </h2>
               <p className="text-green-100 text-center mt-2 mobile-text">
@@ -258,11 +274,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
               {jurors.length > 0 ? (
                 <ol className="space-y-3" role="list" aria-label="Top jurors leaderboard">
                   {jurors.map((juror) => (
-                    <LeaderboardEntryComponent
-                      key={juror.username}
-                      entry={juror}
-                      type="juror"
-                    />
+                    <LeaderboardEntryComponent key={juror.username} entry={juror} type="juror" />
                   ))}
                 </ol>
               ) : (
@@ -276,11 +288,17 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
         </main>
 
         {/* Scoring Information */}
-        <aside className="mt-8 bg-white bg-opacity-10 rounded-lg p-6 mobile-spacing" aria-labelledby="scoring-info-heading">
-          <h3 id="scoring-info-heading" className="text-xl font-bold text-white ace-attorney-text mb-4 text-center mobile-text">
+        <aside
+          className="mt-8 bg-white bg-opacity-10 rounded-lg p-6 mobile-spacing"
+          aria-labelledby="scoring-info-heading"
+        >
+          <h3
+            id="scoring-info-heading"
+            className="text-xl font-bold text-white ace-attorney-text mb-4 text-center mobile-text"
+          >
             How Scoring Works
           </h3>
-          <div className="grid gap-4 md:grid-cols-2 text-white">
+          <div className="grid gap-4 md:grid-cols-2 text-black">
             <div>
               <h4 className="font-bold text-amber-300 mb-2 mobile-text">Attorney Scoring:</h4>
               <ul className="text-sm space-y-1 mobile-text">
