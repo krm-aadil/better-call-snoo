@@ -7,14 +7,15 @@ export const createPost = async () => {
     throw new Error('subredditName is required');
   }
 
+  //post splash screen
   return await reddit.submitCustomPost({
     splash: {
       // Splash Screen Configuration
       appDisplayName: 'Better Call Snoo',
       backgroundUri: 'default-splash.png',
-      buttonLabel: 'Enter Courtroom',
-      description: 'Defend quirky cases and vote as jury in this Ace Attorney-inspired legal game!',
-      heading: 'Better Call Snoo',
+      buttonLabel: 'PLAY NOW',
+      description: 'Defend the most ridiculous cases on Reddit! Choose your case, craft your defense, and let the community vote as your jury in this Ace Attorney-inspired legal game.',
+      heading: ' ',
       appIconUri: 'default-icon.png',
     },
     postData: {
@@ -22,7 +23,7 @@ export const createPost = async () => {
       gameState: 'daily_docket',
     },
     subredditName: subredditName,
-    title: 'Better Call Snoo - Daily Legal Defense Game',
+    title: '⚖️ Better Call Snoo - Daily Legal Defense Game',
   });
 };
 
@@ -37,14 +38,14 @@ export const createDefensePost = async (
     throw new Error('subredditName is required');
   }
 
-  const postTitle = `Better Call Snoo: ${caseData.title}`;
-  const postDescription = `${authorUsername} defends: "${caseData.crime}" - Vote as jury!`;
+  const postTitle = `⚖️ Better Call Snoo: ${caseData.title}`;
+  const postDescription = `Attorney ${authorUsername} presents their defense for "${caseData.crime}". Will justice prevail? Cast your vote as a juror in this Ace Attorney-inspired courtroom drama!`;
 
   return await reddit.submitCustomPost({
     splash: {
-      appDisplayName: 'Better Call Snoo - Jury Voting',
+      appDisplayName: 'Better Call Snoo',
       backgroundUri: 'default-splash.png',
-      buttonLabel: 'Enter Courtroom',
+      buttonLabel: '👨‍⚖️ Enter Jury Box 👨‍⚖️',
       description: postDescription,
       heading: 'Jury Voting',
       appIconUri: 'default-icon.png',

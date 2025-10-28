@@ -5,10 +5,26 @@
     "dir": "dist/client",
     "entrypoints": {
       "default": {
-        "entry": "index.html"
+        "entry": "index.html",
+        "splash": {
+          "title": " ",
+          "subtitle": "Can you prove your client's innocence?",
+          "description": "Ace Attorney style legal defense game",
+          "background": "default-splash.png",
+          "icon": "default-icon.png",
+          "buttonText": "PLAY NOW",
+          "ButtonLabel": "PLAY NOW"
+        }
       },
       "jury-voting": {
-        "entry": "index.html"
+        "entry": "index.html",
+        "splash": {
+          "title": "Jury Duty",
+          "subtitle": "Justice awaits your verdict",
+          "description": "Vote on this defense case",
+          "background": "default-splash.png",
+          "buttonText": "CAST VOTE"
+        }
       }
     }
   },

@@ -38,7 +38,7 @@ export const useGame = () => {
         const data: InitResponse | JuryVotingInitResponse = await res.json();
         
         if (data.type === 'jury_voting_init') {
-          // This is a jury voting post
+          // This is a jury voting post - skip splash and go directly to jury voting
           setState(prev => ({
             ...prev,
             gameState: 'jury_voting',
@@ -53,7 +53,7 @@ export const useGame = () => {
             loading: false,
           }));
         } else if (data.type === 'init') {
-          // This is the main game post
+          // This is the main game post - load data but stay on splash
           setState(prev => ({
             ...prev,
             cases: data.dailyCases,

@@ -391,6 +391,140 @@ select:focus-visible {
   border: 2px solid #000;
 }
 
+/* Splash Screen Specific Animations */
+@keyframes splash-title-reveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(-50px);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1) translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes splash-character-entrance {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) rotate(-180deg);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.2) rotate(10deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes splash-button-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.4), 0 0 40px rgba(34, 197, 94, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(34, 197, 94, 0.6), 0 0 60px rgba(34, 197, 94, 0.3);
+  }
+}
+
+@keyframes floating-elements {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-10px) rotate(2deg);
+  }
+  66% {
+    transform: translateY(5px) rotate(-1deg);
+  }
+}
+
+/* Splash screen utility classes */
+.animate-splash-title {
+  animation: splash-title-reveal 1.5s ease-out forwards;
+}
+
+.animate-splash-character {
+  animation: splash-character-entrance 2s ease-out forwards;
+}
+
+.animate-splash-button-glow {
+  animation: splash-button-glow 2s ease-in-out infinite;
+}
+
+.animate-floating {
+  animation: floating-elements 4s ease-in-out infinite;
+}
+
+/* Enhanced splash screen background */
+.splash-bg-pattern {
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.05) 0%, transparent 50%),
+    linear-gradient(45deg, rgba(255, 215, 0, 0.02) 0%, transparent 25%, rgba(59, 130, 246, 0.02) 50%, transparent 75%);
+}
+
+/* Enhanced glow effects for splash screen */
+@keyframes icon-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6)) drop-shadow(0 0 30px rgba(255, 215, 0, 0.3));
+  }
+}
+
+@keyframes courtroom-entrance {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(50px);
+  }
+  60% {
+    opacity: 0.8;
+    transform: scale(1.05) translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes legal-badge-spin {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  25% {
+    transform: rotate(90deg) scale(1.1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1);
+  }
+  75% {
+    transform: rotate(270deg) scale(1.1);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+/* New utility classes for enhanced splash screen */
+.animate-icon-glow {
+  animation: icon-glow 3s ease-in-out infinite;
+}
+
+.animate-courtroom-entrance {
+  animation: courtroom-entrance 2s ease-out forwards;
+}
+
+.animate-legal-badge-spin {
+  animation: legal-badge-spin 4s ease-in-out infinite;
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   * {
@@ -401,7 +535,9 @@ select:focus-visible {
   
   .animate-pulse,
   .animate-spin,
-  .animate-bounce {
+  .animate-bounce,
+  .animate-floating,
+  .animate-splash-button-glow {
     animation: none !important;
   }
 }
