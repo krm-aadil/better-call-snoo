@@ -48,5 +48,8 @@
   },
   "triggers": {
     "onAppInstall": "/internal/on-app-install"
+  },
+  "dev": {
+    "subreddit": "better_call_snoo_dev5"
   }
 }

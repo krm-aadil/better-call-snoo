@@ -31,8 +31,17 @@ export const App = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-blue-900 to-purple-900">
-        <div className="text-white text-2xl mobile-text" role="status" aria-live="polite">
+      // Updated this div for the loading screen background
+      <div 
+        className="flex justify-center items-center min-h-screen bg-cover bg-center bg-no-repeat"
+        // Use the asset path directly, assuming it's served from the root
+        style={{ backgroundImage: `url('/Loading-screen.png')` }} 
+      >
+        <div 
+          className="text-white text-2xl mobile-text bg-black bg-opacity-60 p-4 rounded-lg shadow-lg" 
+          role="status" 
+          aria-live="polite"
+        >
           <span className="sr-only">Loading application: </span>Loading Better Call Snoo...
         </div>
       </div>

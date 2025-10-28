@@ -14,7 +14,7 @@ export const createPost = async () => {
       appDisplayName: 'Better Call Snoo',
       backgroundUri: 'default-splash.png',
       buttonLabel: 'PLAY NOW',
-      description: 'Defend the most ridiculous cases on Reddit! Choose your case, craft your defense, and let the community vote as your jury in this Ace Attorney-inspired legal game.',
+      description: ' ',
       heading: ' ',
       appIconUri: 'default-icon.png',
     },
@@ -23,7 +23,7 @@ export const createPost = async () => {
       gameState: 'daily_docket',
     },
     subredditName: subredditName,
-    title: '⚖️ Better Call Snoo - Daily Legal Defense Game',
+    title: 'Better Call Snoo - Main Court',
   });
 };
 
