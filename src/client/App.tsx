@@ -6,12 +6,26 @@ import { JuryVoting } from './components/JuryVoting';
 import { Leaderboard } from './components/Leaderboard';
 
 export const App = () => {
-  const { gameState, cases, selectedCase, loading, error, juryVotingData, selectCase, backToDocket, setGameState } = useGame();
-  const { submitDefense, loading: submissionLoading, error: submissionError } = useDefenseSubmission();
+  const {
+    gameState,
+    cases,
+    selectedCase,
+    loading,
+    error,
+    juryVotingData,
+    selectCase,
+    backToDocket,
+    setGameState,
+  } = useGame();
+  const {
+    submitDefense,
+    loading: submissionLoading,
+    error: submissionError,
+  } = useDefenseSubmission();
 
   const handleDefenseSubmit = async (defenseText: string) => {
     if (!selectedCase) return;
-    
+
     const success = await submitDefense(selectedCase.id, defenseText);
     if (success) {
       // Show success message briefly, then navigate back to docket
@@ -31,15 +45,17 @@ export const App = () => {
 
   if (loading) {
     return (
-      // Updated this div for the loading screen background
-      <div 
-        className="flex justify-center items-center min-h-screen bg-cover bg-center bg-no-repeat"
-        // Use the asset path directly, assuming it's served from the root
-        style={{ backgroundImage: `url('/Loading-screen.png')` }} 
+      // Corrected the background image path as per your instruction
+      <div
+        className="flex justify-center items-center min-h-screen bg-center bg-no-repeat"
+        style={{ 
+          backgroundImage: `url('/New-Loading-Screen.png')`,
+          backgroundSize: '100% 100%'
+        }}
       >
-        <div 
-          className="text-white text-2xl mobile-text bg-black bg-opacity-60 p-4 rounded-lg shadow-lg" 
-          role="status" 
+        <div
+          className="text-white text-2xl mobile-text bg-blue-300 bg-opacity-70 p-6 rounded-lg shadow-xl border-2 border-white" // Kept enhanced readability styles
+          role="status"
           aria-live="polite"
         >
           <span className="sr-only">Loading application: </span>Loading Better Call Snoo...

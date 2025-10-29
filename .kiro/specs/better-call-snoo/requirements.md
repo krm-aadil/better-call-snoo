@@ -90,7 +90,7 @@ The "Better Call Snoo" game is an Ace Attorney-inspired legal defense game for R
 
 1. THE Victim_Snoo and Lawyer_Snoo SHALL be presented as 2D character sprites in a style that mimics the Ace Attorney games.
 2. THE Jury_Voting_Screen SHALL use the exact two-panel layout, stylized text boxes, and character poses as shown in the provided FINAL UI SKETCH.jpg.
-3. THE Daily_Docket_System SHALL incorporate thematic UI elements, such as case file icons or themed buttons.
+3. THE Daily_Docket_System SHALL incorporate thematic UI elements, such as case file icons or themedium buttons.
 4. THE Scales_of_Justice_Display SHALL be animated and styled to fit the game's courtroom aesthetic.
 5. ALL buttons and interactive elements throughout the game SHALL use a bold, game-like font and styling consistent with the Ace Attorney theme.
 

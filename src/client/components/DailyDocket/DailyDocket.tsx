@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { Case } from '../../../shared/types/game';
 
 type DailyDocketProps = {
@@ -8,254 +8,228 @@ type DailyDocketProps = {
   loading?: boolean;
 };
 
-export const DailyDocket: React.FC<DailyDocketProps> = ({ cases, onCaseSelect, onLeaderboardClick, loading = false }) => {
-  const [selectedCase, setSelectedCase] = useState<string | null>(null);
+export const DailyDocket: React.FC<DailyDocketProps> = ({
+  cases,
+  onCaseSelect,
+  onLeaderboardClick,
+  loading = false,
+}) => {
+  const [currentCaseIndex, setCurrentCaseIndex] = useState(0);
+  const [currentDate, setCurrentDate] = useState<string>('');
+  const [currentTime, setCurrentTime] = useState<string>('');
+
+  useEffect(() => {
+    // Set current date and time
+    const updateDateTime = () => {
+      const now = new Date();
+      // Short month, day, year format
+      const dateOptions: Intl.DateTimeFormatOptions = {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      };
+      // Simple HH:MM AM/PM format
+      const timeOptions: Intl.DateTimeFormatOptions = {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+      };
+      setCurrentDate(now.toLocaleDateString('en-US', dateOptions));
+      setCurrentTime(now.toLocaleTimeString('en-US', timeOptions));
+    };
+
+    updateDateTime();
+    // Update time every second for a live clock feel
+    const interval = setInterval(updateDateTime, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleCaseClick = (caseId: string) => {
-    setSelectedCase(caseId);
-    // Add a small delay for the selection animation
-    setTimeout(() => {
-      onCaseSelect(caseId);
-    }, 200);
+    onCaseSelect(caseId);
   };
 
+  const nextCase = () => {
+    setCurrentCaseIndex((prev) => (prev + 1) % (cases.length || 1));
+  };
+
+  const prevCase = () => {
+    setCurrentCaseIndex((prev) => (prev - 1 + (cases.length || 1)) % (cases.length || 1));
+  };
+
+  // Determines the background color based on difficulty for the badge
   const getDifficultyColor = (difficulty: Case['difficulty']) => {
     switch (difficulty) {
       case 'easy':
-        return 'bg-emerald-500 text-white';
+        return 'bg-green-500'; // Green for easy
       case 'medium':
-        return 'bg-amber-500 text-white';
+        return 'bg-yellow-500'; // Yellow for medium
       case 'hard':
-        return 'bg-red-500 text-white';
+        return 'bg-red-500'; // Red for hard
       default:
-        return 'bg-gray-500 text-white';
+        return 'bg-gray-500'; // Gray fallback
     }
   };
 
-  const getCategoryIcon = (category: string) => {
-    // Simple icon mapping based on category
-    const icons: Record<string, string> = {
-      'Theft': '🔓',
-      'Fraud': '💰',
-      'Vandalism': '🎨',
-      'Harassment': '📢',
-      'Trespassing': '🚪',
-      'Public Nuisance': '🔊',
-      'Cyber Crime': '💻',
-      'Transportation Violation': '🚗',
-      'Physics Violation': '⚛️',
-      'Temporal Law': '⏰',
-      'Digital Rights': '🤖',
-      'Property Law': '🏠',
-      'Intellectual Property': '💡',
-      'Jurisdictional Confusion': '🌍',
-      'Quantum Crime': '🔬',
-      'Logic Terrorism': '🧠',
-      'Scientific Fraud': '🧪',
-      'Reality Violation': '🌀',
-      'Counterfeit Currency': '💵',
-      'Mental Disturbance': '🧩',
-      'Statistical Fraud': '📊',
-      'Legal Paradox': '⚖️',
-      'Customs Violation': '📦',
-      'Identity Theft': '👤',
-      'Remote Harassment': '📡',
-      'Interdimensional Traffic Violation': '🚦'
-    };
-    return icons[category] || '⚖️';
-  };
+  const currentCase = cases[currentCaseIndex];
 
+  // Loading state remains simple, focusing on getting to the game
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex justify-center items-center">
-        <div className="bg-black bg-opacity-80 border-4 border-yellow-400 rounded-lg p-8 text-center">
-          <div className="text-2xl font-bold text-yellow-400 mb-4">⚖️ LOADING DOCKET ⚖️</div>
-          <div className="text-white text-lg animate-pulse">Preparing today's cases...</div>
+      <div className="min-h-screen bg-white flex justify-center items-center p-4">
+        <div className="bg-white border-2 border-black rounded-lg p-4 sm:p-8 text-center max-w-sm w-full shadow-lg">
+          <div className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">
+            ⚖️ LOADING DOCKET ⚖️
+          </div>
+          <div className="text-gray-600 text-base sm:text-lg animate-pulse">
+            Preparing today's cases...
+          </div>
         </div>
       </div>
     );
   }
 
+  // Main polished UI
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 overflow-hidden">
-      {/* Skip link for accessibility */}
-      <a href="#main-content" className="skip-link">
-        Skip to main content
-      </a>
-      
-      {/* Courtroom Background Elements - decorative only */}
-      <div className="absolute inset-0 opacity-10" aria-hidden="true">
-        <div className="absolute top-10 left-10 text-6xl">⚖️</div>
-        <div className="absolute top-20 right-20 text-4xl">🏛️</div>
-        <div className="absolute bottom-20 left-20 text-5xl">📜</div>
-        <div className="absolute bottom-10 right-10 text-3xl">🔨</div>
-      </div>
+    <div
+      className="min-h-screen bg-cover bg-center bg-no-repeat flex flex-col"
+      // Apply the court background image
+      style={{ backgroundImage: 'url(/court/court-background.png)' }}
+    >
+      {/* Header Section */}
+      <header className="flex justify-between items-center p-2 sm:p-4 border-b-2 border-black bg-white bg-opacity-80 shadow-md backdrop-blur-sm">
+        <div className="text-xs sm:text-sm text-gray-700 font-semibold">{currentDate}</div>
+        <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 font-serif tracking-wider">
+          BetterCallSnoo
+        </h1>
+        <div className="text-xs sm:text-sm text-gray-700 font-semibold">{currentTime}</div>
+      </header>
 
-      <div className="relative z-10 p-4 max-w-6xl mx-auto">
-        {/* Header */}
-        <header className="text-center mb-8 pt-4">
-          <div className="bg-black bg-opacity-80 border-4 border-yellow-400 rounded-lg p-6 mb-6">
-            <h1 
-              id="main-content"
-              className="text-4xl md:text-6xl font-bold text-yellow-400 mb-2 font-serif"
-              tabIndex={-1}
-            >
-              <span aria-hidden="true">📋</span> DAILY DOCKET <span aria-hidden="true">📋</span>
-            </h1>
-            <p className="text-white text-lg md:text-xl mobile-text">
-              Choose your case and prepare your defense!
-            </p>
-            <div className="text-yellow-300 text-sm mt-2" role="status" aria-live="polite">
-              <span className="sr-only">Today's date: </span>
-              {new Date().toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-              })}
-            </div>
-            
-            {/* Navigation Buttons */}
-            {onLeaderboardClick && (
-              <nav className="mt-4" aria-label="Main navigation">
-                <button
-                  onClick={onLeaderboardClick}
-                  className="
-                    bg-gradient-to-r from-amber-600 to-amber-700 
-                    text-white font-bold px-6 py-3 rounded-lg
-                    hover:from-amber-700 hover:to-amber-800
-                    focus:from-amber-700 focus:to-amber-800
-                    transform hover:scale-105 focus:scale-105 transition-all duration-200
-                    shadow-lg hover:shadow-xl focus:shadow-xl
-                    text-sm md:text-base mobile-touch-target
-                  "
-                  aria-label="View Hall of Justice leaderboards"
-                >
-                  <span aria-hidden="true">🏆</span> Hall of Justice
-                </button>
-              </nav>
-            )}
-          </div>
-        </header>
+      {/* Main Content Area (flex-grow pushes footer down) */}
+      <main className="flex-grow flex flex-col lg:flex-row items-center lg:items-stretch overflow-hidden relative pt-4 lg:pt-0">
+        {/* Left Side - Lawyer Image (Positioned absolutely on large screens for fine control) */}
+        <div className="w-full lg:absolute lg:left-0 lg:bottom-16 lg:w-1/3 flex items-center lg:items-end justify-center px-4 pt-4 lg:pt-0 lg:px-8 order-2 lg:order-1">
+          <img
+            src="/lawyers/arms-crossed.png"
+            alt="Lawyer Character"
+            // Increased size, especially on larger screens, positioned towards bottom
+            className="w-40 sm:w-56 md:w-72 lg:w-96 h-auto object-contain max-h-[25vh] sm:max-h-[35vh] lg:max-h-[60vh] drop-shadow-lg"
+          />
+        </div>
 
-        {/* Cases Grid - Mobile Optimized */}
-        <main>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {cases.map((case_, index) => (
-              <article
-                key={case_.id}
-                className={`
-                  relative bg-gradient-to-br from-amber-50 to-amber-100 
-                  border-4 border-amber-600 rounded-lg shadow-2xl 
-                  smooth-hover smooth-transition
-                  cursor-pointer min-h-[200px] p-4 mobile-spacing
-                  ${selectedCase === case_.id ? 'scale-105 border-yellow-400 shadow-3xl animate-pulse-glow' : ''}
-                  animate-fade-in keyboard-nav
-                `}
-                style={{ animationDelay: `${index * 150}ms` }}
-                role="button"
-                tabIndex={0}
-                aria-label={`Case: ${case_.title}. Crime: ${case_.crime}. Difficulty: ${case_.difficulty}. Category: ${case_.category}. Press Enter or Space to defend this case.`}
-                onClick={() => handleCaseClick(case_.id)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    handleCaseClick(case_.id);
-                  }
-                }}
+        {/* Right Side - Case Carousel */}
+        <div className="w-full lg:w-2/3 lg:ml-auto flex flex-col justify-center items-center p-4 sm:p-6 lg:p-12 order-1 lg:order-2">
+          {currentCase ? (
+            // Added perspective for a slight 3D effect on hover
+            <div className="[perspective:1000px] w-full max-w-xs sm:max-w-sm">
+              <div
+                className="bg-white border-2 border-black rounded-lg p-4 sm:p-5 shadow-xl w-full mx-auto 
+                            hover:shadow-2xl transition-all duration-300 hover:scale-[1.03] transform hover:-rotate-y-1"
               >
-                {/* Case File Header */}
-                <header className="flex items-center justify-between mb-3">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-2xl" aria-hidden="true">{getCategoryIcon(case_.category)}</span>
-                    <span className="text-xs font-bold text-amber-800 uppercase tracking-wide">
-                      Case File #{case_.id.split('_')[1]}
-                    </span>
+                {/* Case Header */}
+                <div className="flex items-center justify-between mb-3 sm:mb-4">
+                  <div className="bg-blue-600 text-white px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-bold shadow-sm">
+                    CASE FILE #{currentCase.id.split('_')[1] || currentCaseIndex + 1}
                   </div>
-                  <div 
-                    className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${getDifficultyColor(case_.difficulty)}`}
-                    role="status"
-                    aria-label={`Difficulty level: ${case_.difficulty}`}
+                  <div
+                    className={`px-2 py-1 rounded text-xs font-bold text-white shadow-sm ${getDifficultyColor(currentCase.difficulty)}`}
                   >
-                    {case_.difficulty}
+                    {currentCase.difficulty.toUpperCase()}
                   </div>
-                </header>
-
-                {/* Case Title */}
-                <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-3 leading-tight font-serif mobile-text">
-                  {case_.title}
-                </h2>
-
-                {/* Crime Description */}
-                <div className="bg-red-50 border-l-4 border-red-400 p-3 mb-4 rounded-r" role="region" aria-label="Crime details">
-                  <p className="text-sm text-gray-800 leading-relaxed mobile-text">
-                    <span className="font-bold text-red-600">ACCUSED OF:</span><br />
-                    {case_.crime}
-                  </p>
                 </div>
 
-                {/* Category Badge and Defend Button */}
-                <footer className="flex items-center justify-between">
-                  <span 
-                    className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium"
-                    role="status"
-                    aria-label={`Category: ${case_.category}`}
-                  >
-                    {case_.category}
-                  </span>
-                  
-                  {/* Defend Button */}
-                  <button 
-                    className="
-                      bg-gradient-to-r from-green-600 to-green-700 
-                      text-white font-bold px-4 py-2 rounded-lg
-                      hover:from-green-700 hover:to-green-800
-                      focus:from-green-700 focus:to-green-800
-                      transform hover:scale-105 focus:scale-105 transition-all duration-200
-                      shadow-lg hover:shadow-xl focus:shadow-xl
-                      text-sm md:text-base mobile-touch-target
-                      min-w-[80px]
-                    "
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleCaseClick(case_.id);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleCaseClick(case_.id);
+                {/* Prisoner Image - Square container */}
+                <div className="text-center mb-3 sm:mb-4">
+                  {/* Aspect ratio 1/1 forces square, object-cover fills it */}
+                  <div className="aspect-square w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 mx-auto border-2 border-gray-400 rounded-lg overflow-hidden shadow-inner bg-gray-100">
+                    <img
+                      // Dynamic prisoner image based on index, looping through 1-6
+                      src={`/prisoners/${(currentCaseIndex % 6) + 1}.png`}
+                      alt={`Mugshot for Case #${currentCase.id.split('_')[1] || currentCaseIndex + 1}`}
+                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                      // Add error handling for images
+                      onError={(e) =>
+                        (e.currentTarget.src =
+                          'https://placehold.co/144x144/cccccc/333333?text=Mugshot')
                       }
-                    }}
-                    aria-label={`Defend case: ${case_.title}`}
+                    />
+                  </div>
+                </div>
+
+                {/* Case Title */}
+                <h3 className="text-base sm:text-lg font-bold mb-2 sm:mb-3 text-center text-gray-800 leading-tight font-serif">
+                  {currentCase.title}
+                </h3>
+
+                {/* Accused Of Section */}
+                <div className="bg-red-50 border-l-4 border-red-500 text-red-900 px-3 py-2 mb-3 sm:mb-4 rounded-r-md shadow-sm">
+                  <p className="font-bold text-xs sm:text-sm uppercase tracking-wide">
+                    Accused Of:
+                  </p>
+                  <p className="text-xs sm:text-sm leading-snug mt-1">{currentCase.crime}</p>
+                </div>
+
+                {/* Category/Violation Type */}
+                <div className="mb-4 sm:mb-5 text-center">
+                  <p className="text-xs sm:text-sm text-gray-600 italic">{currentCase.category}</p>
+                </div>
+
+                {/* Defend Button - Blue */}
+                <div className="text-center mb-3 sm:mb-4">
+                  <button
+                    onClick={() => handleCaseClick(currentCase.id)}
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 sm:px-8 rounded-md transition-all duration-200 hover:scale-105 shadow-md hover:shadow-lg text-sm sm:text-base w-full sm:w-auto transform active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
                   >
-                    <span aria-hidden="true">⚖️</span> DEFEND
+                    DEFEND
                   </button>
-                </footer>
+                </div>
 
-                {/* Selection Overlay */}
-                {selectedCase === case_.id && (
-                  <div 
-                    className="absolute inset-0 bg-yellow-400 bg-opacity-20 rounded-lg border-4 border-yellow-400 animate-pulse" 
-                    aria-hidden="true"
-                  />
+                {/* Carousel Navigation */}
+                {cases.length > 1 && (
+                  <div className="flex justify-between items-center border-t border-gray-200 pt-3 mt-3">
+                    <button
+                      onClick={prevCase}
+                      aria-label="Previous Case"
+                      className="text-gray-500 hover:text-gray-800 text-2xl sm:text-3xl hover:scale-125 transition-all duration-200 p-1 rounded-full hover:bg-gray-200 touch-manipulation focus:outline-none focus:ring-1 focus:ring-gray-400"
+                    >
+                      ‹{/* Left arrow */}
+                    </button>
+                    <div className="text-xs sm:text-sm text-gray-600 font-medium tabular-nums">
+                      {currentCaseIndex + 1} / {cases.length}
+                    </div>
+                    <button
+                      onClick={nextCase}
+                      aria-label="Next Case"
+                      className="text-gray-500 hover:text-gray-800 text-2xl sm:text-3xl hover:scale-125 transition-all duration-200 p-1 rounded-full hover:bg-gray-200 touch-manipulation focus:outline-none focus:ring-1 focus:ring-gray-400"
+                    >
+                      ›{/* Right arrow */}
+                    </button>
+                  </div>
                 )}
-              </article>
-            ))}
-          </div>
-        </main>
+              </div>
+            </div>
+          ) : (
+            // Display if no cases are loaded
+            <div className="text-center text-gray-600 bg-white p-6 rounded-lg shadow-md">
+              No cases available today. Check back tomorrow!
+            </div>
+          )}
+        </div>
+      </main>
 
-        {/* Footer */}
-        <footer className="text-center mt-8 pb-4">
-          <div className="bg-black bg-opacity-60 border-2 border-gray-400 rounded-lg p-4 text-white text-sm mobile-spacing" role="complementary">
-            <p className="mobile-text">
-              <span aria-hidden="true">💡</span> <strong>Tip:</strong> Choose wisely! Each case has different difficulty levels and scoring potential.
-            </p>
-          </div>
-        </footer>
-      </div>
-
-
+      {/* Footer - Hall of Justice Button (Fixed at bottom) */}
+      <footer className="fixed bottom-0 left-0 right-0 p-2 sm:p-4 z-20">
+        {onLeaderboardClick && (
+          <button
+            onClick={onLeaderboardClick}
+            className="w-full bg-white border-2 border-black text-blue-700 font-bold py-3 sm:py-4 rounded-lg text-base sm:text-lg 
+                       hover:bg-gray-100 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 
+                       shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 touch-manipulation"
+          >
+            🏛️ Hall of Justice
+          </button>
+        )}
+      </footer>
     </div>
   );
 };

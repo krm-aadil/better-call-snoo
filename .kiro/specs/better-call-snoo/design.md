@@ -109,7 +109,7 @@ interface DefenseSubmission {
 ```typescript
 interface CustomPostData {
   caseTitle: string;
-  crimeDescription: string;
+  crimediumescription: string;
   defenseText: string;
   authorUsername: string;
   submissionTime: number;

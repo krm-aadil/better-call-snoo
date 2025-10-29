@@ -57,7 +57,67 @@ export function calculateJurorScore(userVote: 'guilty' | 'not_guilty', finalVerd
 }
 
 /**
- * Process voting period end and calculate scores
+ * Process live scoring after each vote (immediate score updates)
+ */
+export async function processLiveScoring(postId: string, defenseId: string): Promise<void> {
+  try {
+    // Get voting results
+    const voteData = await redis.hMGet(`votes:${postId}`, ['guilty', 'notGuilty']);
+    const guilty = parseInt(voteData[0] || '0');
+    const notGuilty = parseInt(voteData[1] || '0');
+
+    // Only process if there are votes
+    if (guilty + notGuilty === 0) {
+      return;
+    }
+
+    // Get defense data
+    const defenseData = await redis.hGetAll(`defense:${defenseId}`);
+    if (!defenseData.authorId) {
+      console.error(`Defense data not found for ${defenseId}`);
+      return;
+    }
+
+    const finalVerdict = determineFinalVerdict(guilty, notGuilty);
+    const votingResult: VotingResult = {
+      guilty,
+      notGuilty,
+      finalVerdict,
+      totalVotes: guilty + notGuilty,
+    };
+
+    // Calculate attorney score
+    const attorneyScore = calculateAttorneyScore(votingResult);
+    
+    // Update attorney's score (this will overwrite previous scores for this case)
+    await updateAttorneyScoreLive(defenseData.authorId!, defenseData.authorUsername || defenseData.authorId!, attorneyScore, finalVerdict === 'not_guilty', defenseId);
+
+    // Process juror scores
+    await processJurorScoresLive(postId, finalVerdict, defenseId);
+
+    // Mark voting as processed and store current results
+    await redis.hSet(`votes:${postId}`, {
+      votingClosed: 'true',
+      finalVerdict,
+      attorneyScore: attorneyScore.toString(),
+      processedAt: Date.now().toString(),
+    });
+
+    // Store case result for defense
+    await redis.hSet(`defense:${defenseId}`, {
+      finalVerdict,
+      attorneyScore: attorneyScore.toString(),
+      votingClosed: 'true',
+    });
+
+    console.log(`Live scoring processed for post ${postId}: verdict=${finalVerdict}, attorneyScore=${attorneyScore}`);
+  } catch (error) {
+    console.error(`Error processing live scoring for post ${postId}:`, error);
+  }
+}
+
+/**
+ * Process voting period end and calculate scores (for scheduled processing)
  */
 export async function processVotingPeriodEnd(postId: string, defenseId: string): Promise<void> {
   try {
@@ -118,6 +178,63 @@ export async function processVotingPeriodEnd(postId: string, defenseId: string):
 }
 
 /**
+ * Update attorney's total score and statistics (for live scoring)
+ */
+async function updateAttorneyScoreLive(userId: string, username: string, currentScore: number, won: boolean, defenseId: string): Promise<void> {
+  const attorneyKey = `attorney:${userId}`;
+  
+  // Check if this case was already scored
+  const existingScore = await redis.hGet(`case_score:${defenseId}`, 'attorneyScore');
+  const previousScore = existingScore ? parseInt(existingScore) : 0;
+  
+  // Calculate the score difference
+  const scoreDifference = currentScore - previousScore;
+  
+  // Update attorney scores with the difference
+  await redis.hIncrBy(attorneyKey, 'totalScore', scoreDifference);
+  
+  // Only increment cases defended if this is the first time scoring this case
+  if (!existingScore) {
+    await redis.hIncrBy(attorneyKey, 'casesDefended', 1);
+  }
+  
+  // Update cases won based on current verdict
+  if (existingScore) {
+    // Remove previous win if it existed
+    const previousWon = await redis.hGet(`case_score:${defenseId}`, 'won');
+    if (previousWon === 'true') {
+      await redis.hIncrBy(attorneyKey, 'casesWon', -1);
+    }
+  }
+  
+  if (won) {
+    await redis.hIncrBy(attorneyKey, 'casesWon', 1);
+  }
+  
+  await redis.hSet(attorneyKey, {
+    username: username,
+    lastActivity: Date.now().toString(),
+  });
+  
+  // Store the current score for this case
+  await redis.hSet(`case_score:${defenseId}`, {
+    attorneyScore: currentScore.toString(),
+    won: won.toString(),
+    userId: userId,
+  });
+  
+  // Set expiration (90 days)
+  await redis.expire(attorneyKey, 90 * 24 * 60 * 60);
+  await redis.expire(`case_score:${defenseId}`, 90 * 24 * 60 * 60);
+  
+  // Update leaderboard sorted set
+  const newTotalScore = await redis.hGet(attorneyKey, 'totalScore');
+  if (newTotalScore) {
+    await redis.zAdd('leaderboard:attorneys', { member: userId, score: parseInt(newTotalScore) });
+  }
+}
+
+/**
  * Update attorney's total score and statistics
  */
 async function updateAttorneyScore(userId: string, username: string, scoreChange: number, won: boolean): Promise<void> {
@@ -143,6 +260,42 @@ async function updateAttorneyScore(userId: string, username: string, scoreChange
   const newTotalScore = await redis.hGet(attorneyKey, 'totalScore');
   if (newTotalScore) {
     await redis.zAdd('leaderboard:attorneys', { member: userId, score: parseInt(newTotalScore) });
+  }
+}
+
+/**
+ * Process scores for all jurors who voted on this case (live scoring)
+ */
+async function processJurorScoresLive(postId: string, finalVerdict: 'guilty' | 'not_guilty', defenseId: string): Promise<void> {
+  // Get all voters for this post
+  const votersData = await redis.hGetAll(`voters:${postId}`);
+  const voters = Object.keys(votersData);
+  
+  for (const userId of voters) {
+    try {
+      // Get user's vote
+      const userVoteData = await redis.hGet(`user_vote:${postId}:${userId}`, 'vote');
+      if (!userVoteData) continue;
+      
+      const userVote = userVoteData as 'guilty' | 'not_guilty';
+      const jurorScore = calculateJurorScore(userVote, finalVerdict);
+      
+      // Get username from user vote data or use userId as fallback
+      const usernameData = await redis.hGet(`user_vote:${postId}:${userId}`, 'username');
+      const username = usernameData || userId;
+      
+      // Update juror score (live version)
+      await updateJurorScoreLive(userId, username, jurorScore, userVote === finalVerdict, defenseId);
+      
+      // Store the final verdict in user's vote record for reference
+      await redis.hSet(`user_vote:${postId}:${userId}`, {
+        finalVerdict,
+        jurorScore: jurorScore.toString(),
+        processed: 'true',
+      });
+    } catch (error) {
+      console.error(`Error processing juror score for user ${userId} on post ${postId}:`, error);
+    }
   }
 }
 
@@ -179,6 +332,64 @@ async function processJurorScores(postId: string, finalVerdict: 'guilty' | 'not_
     } catch (error) {
       console.error(`Error processing juror score for user ${userId} on post ${postId}:`, error);
     }
+  }
+}
+
+/**
+ * Update juror's total score and statistics (for live scoring)
+ */
+async function updateJurorScoreLive(userId: string, username: string, currentScore: number, correct: boolean, defenseId: string): Promise<void> {
+  const jurorKey = `juror:${userId}`;
+  const jurorCaseKey = `juror_case:${defenseId}:${userId}`;
+  
+  // Check if this user already scored for this case
+  const existingData = await redis.hMGet(jurorCaseKey, ['score', 'correct']);
+  const previousScore = existingData[0] ? parseInt(existingData[0]) : 0;
+  const previousCorrect = existingData[1] === 'true';
+  
+  // Calculate the score difference
+  const scoreDifference = currentScore - previousScore;
+  
+  // Update juror scores with the difference
+  await redis.hIncrBy(jurorKey, 'totalPoints', scoreDifference);
+  
+  // Only increment cases judged if this is the first time scoring this case
+  if (!existingData[0]) {
+    await redis.hIncrBy(jurorKey, 'casesJudged', 1);
+  }
+  
+  // Update correct votes based on current verdict
+  if (existingData[0]) {
+    // Remove previous correct vote if it existed
+    if (previousCorrect) {
+      await redis.hIncrBy(jurorKey, 'correctVotes', -1);
+    }
+  }
+  
+  if (correct) {
+    await redis.hIncrBy(jurorKey, 'correctVotes', 1);
+  }
+  
+  await redis.hSet(jurorKey, {
+    username: username,
+    lastActivity: Date.now().toString(),
+  });
+  
+  // Store the current score for this case
+  await redis.hSet(jurorCaseKey, {
+    score: currentScore.toString(),
+    correct: correct.toString(),
+    userId: userId,
+  });
+  
+  // Set expiration (90 days)
+  await redis.expire(jurorKey, 90 * 24 * 60 * 60);
+  await redis.expire(jurorCaseKey, 90 * 24 * 60 * 60);
+  
+  // Update leaderboard sorted set
+  const newTotalPoints = await redis.hGet(jurorKey, 'totalPoints');
+  if (newTotalPoints) {
+    await redis.zAdd('leaderboard:jurors', { member: userId, score: parseInt(newTotalPoints) });
   }
 }
 

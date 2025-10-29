@@ -31,9 +31,9 @@ When users visit your Reddit post, they experience:
 
 **Current Configuration** (in `src/server/core/post.ts`):
 
-- `appIconUri: 'better-call-snoo-icon.svg'` - Custom legal-themed icon
+- `appIconUri: 'better-call-snoo-icon.svg'` - Custom legal-themedium icon
 - `backgroundUri: 'default-splash.png'` - Courtroom background
-- `buttonLabel: '⚖️ Enter Courtroom ⚖️'` - Legal-themed CTA
+- `buttonLabel: '⚖️ Enter Courtroom ⚖️'` - Legal-themedium CTA
 
 ### In-App Splash Screen Assets
 

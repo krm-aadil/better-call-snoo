@@ -2,18 +2,32 @@
 
 /* Better Call Snoo - Ace Attorney Inspired Styles */
 
-/* Custom font for game-like appearance */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:wght@400;600;700&display=swap');
+/* Comic Sans font for fun game appearance */
+/* Global styles - Comic Sans for everything */
+* {
+  font-family: 'Comic Sans MS', cursive, sans-serif !important;
+}
 
-/* Global styles */
 body {
-  font-family: 'Crimson Text', serif;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
   overflow-x: hidden;
 }
 
-/* Ace Attorney-style text styling */
+/* All headings should be bold */
+h1, h2, h3, h4, h5, h6, .heading, .title, .case-title, .game-title {
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  font-weight: bold !important;
+}
+
+/* Make sure buttons and important text elements are also bold */
+.btn, button, .case-card h3, .verdict-text, .score-text {
+  font-weight: bold !important;
+}
+
+/* Ace Attorney-style text styling with Comic Sans */
 .ace-attorney-text {
-  font-family: 'Cinzel', serif;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  font-weight: bold;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 

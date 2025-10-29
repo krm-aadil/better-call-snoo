@@ -15,7 +15,6 @@ export type JuryVotingInitResponse = {
   defenseText: string;
   authorUsername: string;
   defenseId: string;
-  votingEndTime: number;
 };
 
 // Case data structure

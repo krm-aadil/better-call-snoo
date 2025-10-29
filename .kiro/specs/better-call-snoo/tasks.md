@@ -89,7 +89,7 @@
 
   - Set up live vote percentage updates without page refresh
   - Add WebSocket or polling mechanism for real-time data
-  - Ensure vote display updates immediately after user votes
+  - Ensure vote display updates immediumiately after user votes
   - _Requirements: 4.3, 4.5_
 
 - [x] 6. Build scoring and leaderboard systems
