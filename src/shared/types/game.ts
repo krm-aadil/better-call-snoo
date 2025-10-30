@@ -1,5 +1,5 @@
 // Core game state types
-export type GameState = 'daily_docket' | 'defense_submission' | 'jury_voting' | 'results' | 'leaderboard';
+export type GameState = 'role_selection' | 'judge_panel' | 'daily_docket' | 'defense_submission' | 'jury_voting' | 'results' | 'leaderboard';
 
 // Case library and management
 export type CaseLibrary = Case[];

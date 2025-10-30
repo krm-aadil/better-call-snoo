@@ -30,14 +30,14 @@ export const VotingButtons: React.FC<VotingButtonsProps> = ({ onVote, loading, d
     setTimeout(() => setGavelAnimation(false), 600);
   }, [onVote]);
   return (
-    <div className="flex gap-2 sm:gap-4 flex-col sm:flex-row">
+    <div className="flex gap-4 lg:gap-8 flex-col sm:flex-row justify-center items-center">
       <button
         onClick={() => handleVoteClick('guilty')}
         disabled={loading || disabled}
-        className="group relative bg-red-500 hover:bg-red-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg text-sm sm:text-lg font-bold
-                   border-2 border-black shadow-lg transition-all duration-200 hover:scale-105
+        className="group relative bg-red-500 hover:bg-red-600 text-white px-6 sm:px-8 lg:px-12 py-3 sm:py-4 lg:py-5 rounded-lg text-lg sm:text-xl lg:text-2xl font-bold
+                   border-4 border-black shadow-lg transition-all duration-200 hover:scale-105
                    disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
-                   mobile-touch-target"
+                   mobile-touch-target min-w-[140px] lg:min-w-[180px]"
         aria-label="Vote guilty - defendant is guilty of the crime"
         aria-describedby={loading ? 'voting-status' : undefined}
       >
@@ -55,10 +55,10 @@ export const VotingButtons: React.FC<VotingButtonsProps> = ({ onVote, loading, d
       <button
         onClick={() => handleVoteClick('not_guilty')}
         disabled={loading || disabled}
-        className="group relative bg-green-500 hover:bg-green-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg text-sm sm:text-lg font-bold
-                   border-2 border-black shadow-lg transition-all duration-200 hover:scale-105
+        className="group relative bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 lg:px-12 py-3 sm:py-4 lg:py-5 rounded-lg text-lg sm:text-xl lg:text-2xl font-bold
+                   border-4 border-black shadow-lg transition-all duration-200 hover:scale-105
                    disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
-                   mobile-touch-target"
+                   mobile-touch-target min-w-[140px] lg:min-w-[180px]"
         aria-label="Vote not guilty - defendant is innocent of the crime"
         aria-describedby={loading ? 'voting-status' : undefined}
       >

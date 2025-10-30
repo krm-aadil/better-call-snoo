@@ -82,8 +82,19 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-amber-900 to-red-900">
-        <div className="text-white text-2xl ace-attorney-text">Loading Hall of Justice...</div>
+      <div
+        className="flex justify-center items-center min-h-screen bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url('/New-Loading-Screen.png')`,
+        }}
+      >
+        <div
+          className="text-white text-2xl ace-attorney-text bg-blue-300 bg-opacity-70 p-6 rounded-lg shadow-xl border-2 border-white"
+          role="status"
+          aria-live="polite"
+        >
+          <span className="sr-only">Loading leaderboard: </span>Loading Hall of Justice...
+        </div>
       </div>
     );
   }
@@ -96,7 +107,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
           <p className="mb-4">{error}</p>
           <button
             onClick={refreshLeaderboards}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg border-4 border-black transition-all duration-200 hover:scale-105 shadow-lg"
           >
             Try Again
           </button>
@@ -106,7 +117,10 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
   }
 
   return (
-    <div className="min-h-screen bg-white p-4">
+    <div
+      className="min-h-screen bg-cover bg-center bg-no-repeat p-4"
+      style={{ backgroundImage: 'url(/New-Loading-Screen.png)' }}
+    >
       {/* Skip link for accessibility */}
       <a href="#leaderboard-content" className="skip-link">
         Skip to leaderboard content
@@ -122,7 +136,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
           >
             Hall of Justice
           </h1>
-          <p className="text-lg sm:text-xl text-blue-600 mobile-text">
+          <p className="text-lg sm:text-xl text-white mobile-text">
             The finest attorneys and most discerning jurors in the land
           </p>
           <nav
@@ -132,7 +146,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
             {onBack && (
               <button
                 onClick={onBack}
-                className="bg-blue-600 hover:bg-blue-700 focus:bg-blue-700 text-white font-bold py-3 px-6 rounded-full border-2 border-black transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl mobile-touch-target mobile-text"
+                className="bg-blue-600 hover:bg-blue-700 focus:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg border-4 border-black transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl mobile-touch-target mobile-text"
                 aria-label="Go back to Daily Docket"
               >
                 ← Back to Docket
@@ -140,7 +154,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
             )}
             <button
               onClick={refreshLeaderboards}
-              className="bg-orange-500 hover:bg-orange-600 focus:bg-orange-600 text-white font-bold py-3 px-6 rounded-full border-2 border-black transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl mobile-touch-target mobile-text"
+              className="bg-blue-600 hover:bg-blue-700 focus:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg border-4 border-black transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl mobile-touch-target mobile-text"
               aria-label="Refresh leaderboard rankings"
             >
               <span aria-hidden="true">🔄</span> Refresh Rankings
@@ -176,7 +190,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
               {/* Right Side - Performance Stats */}
               <div className="lg:w-2/3 grid gap-4 md:grid-cols-2">
                 {/* User Attorney Stats */}
-                <div className="bg-white rounded-2xl border-2 border-black p-4 shadow-lg mobile-spacing">
+                <div className="bg-white rounded-2xl border-4 border-blue-600 p-4 shadow-xl mobile-spacing">
                   <h3 className="text-lg font-bold text-blue-600 mb-3 mobile-text">As Attorney</h3>
                   <dl className="space-y-2 text-gray-800">
                     <div className="flex justify-between mobile-text">
@@ -205,7 +219,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
                 </div>
 
                 {/* User Juror Stats */}
-                <div className="bg-white rounded-2xl border-2 border-black p-4 shadow-lg mobile-spacing">
+                <div className="bg-white rounded-2xl border-4 border-blue-600 p-4 shadow-xl mobile-spacing">
                   <h3 className="text-lg font-bold text-blue-600 mb-3 mobile-text">As Juror</h3>
                   <dl className="space-y-2 text-gray-800">
                     <div className="flex justify-between mobile-text">
@@ -326,7 +340,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
             How Scoring Works
           </h3>
           <div className="grid gap-6 md:grid-cols-2">
-            <div className="bg-blue-50 rounded-2xl border-2 border-blue-300 p-4">
+            <div className="bg-white rounded-2xl border-4 border-blue-600 p-4 shadow-lg">
               <h4 className="font-bold text-blue-600 mb-3 text-lg mobile-text">
                 Attorney Scoring:
               </h4>
@@ -345,19 +359,18 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ onBack }) => {
                 </li>
               </ul>
             </div>
-            <div className="bg-orange-50 rounded-2xl border-2 border-orange-300 p-4">
-              <h4 className="font-bold text-orange-600 mb-3 text-lg mobile-text">Juror Scoring:</h4>
+            <div className="bg-white rounded-2xl border-4 border-blue-600 p-4 shadow-lg">
+              <h4 className="font-bold text-blue-600 mb-3 text-lg mobile-text">Juror Scoring:</h4>
               <ul className="text-sm space-y-2 text-gray-700 mobile-text">
                 <li className="flex items-start">
-                  <span className="text-orange-500 mr-2">•</span>
+                  <span className="text-blue-500 mr-2">•</span>
                   +10 points for matching the majority vote
                 </li>
                 <li className="flex items-start">
-                  <span className="text-orange-500 mr-2">•</span>0 points for voting with the
-                  minority
+                  <span className="text-blue-500 mr-2">•</span>0 points for voting with the minority
                 </li>
                 <li className="flex items-start">
-                  <span className="text-orange-500 mr-2">•</span>
+                  <span className="text-blue-500 mr-2">•</span>
                   Vote wisely to maximize your accuracy!
                 </li>
               </ul>

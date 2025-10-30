@@ -15,13 +15,12 @@ type GameHookState = {
     defenseText: string;
     authorUsername: string;
     defenseId: string;
-    votingEndTime: number;
   };
 };
 
 export const useGame = () => {
   const [state, setState] = useState<GameHookState>({
-    gameState: 'daily_docket',
+    gameState: 'role_selection',
     cases: [],
     selectedCase: null,
     username: null,
@@ -48,16 +47,16 @@ export const useGame = () => {
               defenseText: data.defenseText,
               authorUsername: data.authorUsername,
               defenseId: data.defenseId,
-              votingEndTime: data.votingEndTime,
             },
             loading: false,
           }));
         } else if (data.type === 'init') {
-          // This is the main game post - load data but stay on splash
+          // This is the main game post - load data and go directly to daily docket
           setState(prev => ({
             ...prev,
             cases: data.dailyCases,
             username: data.username,
+            gameState: 'daily_docket',
             loading: false,
           }));
         } else {
@@ -98,10 +97,35 @@ export const useGame = () => {
     setState(prev => ({ ...prev, gameState: newState }));
   }, []);
 
+  const selectJudgeRole = useCallback(() => {
+    setState(prev => ({ ...prev, gameState: 'judge_panel' }));
+  }, []);
+
+  const selectDefendantRole = useCallback(() => {
+    setState(prev => ({ ...prev, gameState: 'daily_docket' }));
+  }, []);
+
+  const backToRoleSelection = useCallback(() => {
+    setState(prev => ({ ...prev, gameState: 'role_selection' }));
+  }, []);
+
+  const selectDefendantPost = useCallback((postId: string) => {
+    // This would redirect to the specific jury voting post
+    // For now, we'll just log it - in a real implementation, 
+    // you'd navigate to that specific post URL
+    console.log('Navigating to defendant post:', postId);
+    // In Devvit, you'd typically use reddit.navigateTo() or similar
+    // window.open(`/r/${subreddit}/comments/${postId}`, '_blank');
+  }, []);
+
   return {
     ...state,
     selectCase,
     backToDocket,
     setGameState,
+    selectJudgeRole,
+    selectDefendantRole,
+    backToRoleSelection,
+    selectDefendantPost,
   } as const;
 };

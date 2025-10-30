@@ -355,6 +355,65 @@ router.get<{ postId: string }, VoteData | { status: string; message: string }>(
   }
 );
 
+// Get available defendant posts for judges to vote on
+router.get<{}, { type: string; defendantPosts: any[] } | { status: string; message: string }>(
+  '/api/defendant-posts',
+  async (_req, res): Promise<void> => {
+    try {
+      // Get recent defense posts from Redis
+      // We'll look for defense entries created in the last 24 hours
+      const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
+      
+      // Get all defense keys
+      const defenseKeys = await redis.keys('defense:*');
+      const defendantPosts = [];
+      
+      for (const key of defenseKeys) {
+        const defenseData = await redis.hGetAll(key);
+        const timestamp = parseInt(defenseData.timestamp || '0');
+        
+        // Only include recent defenses that have associated posts
+        if (timestamp > oneDayAgo && defenseData.postId) {
+          // Get vote data for this post
+          const voteData = await redis.hMGet(`votes:${defenseData.postId}`, ['guilty', 'notGuilty', 'votingClosed']);
+          const guilty = parseInt(voteData[0] || '0');
+          const notGuilty = parseInt(voteData[1] || '0');
+          const votingClosed = voteData[2] === 'true';
+          
+          defendantPosts.push({
+            defenseId: key.replace('defense:', ''),
+            postId: defenseData.postId,
+            caseId: defenseData.caseId,
+            defenseText: defenseData.defenseText,
+            authorUsername: defenseData.authorUsername,
+            timestamp: timestamp,
+            votes: {
+              guilty,
+              notGuilty,
+              totalVotes: guilty + notGuilty,
+              votingClosed
+            }
+          });
+        }
+      }
+      
+      // Sort by timestamp (newest first)
+      defendantPosts.sort((a, b) => b.timestamp - a.timestamp);
+      
+      res.json({
+        type: 'defendant_posts',
+        defendantPosts: defendantPosts.slice(0, 20) // Limit to 20 most recent
+      });
+    } catch (error) {
+      console.error('Defendant posts fetch error:', error);
+      res.status(500).json({
+        status: 'error',
+        message: 'Failed to fetch defendant posts',
+      });
+    }
+  }
+);
+
 // Get leaderboards
 router.get<{}, LeaderboardResponse | { status: string; message: string }>(
   '/api/leaderboards',

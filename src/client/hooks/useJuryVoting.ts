@@ -23,25 +23,37 @@ export const useJuryVoting = () => {
 
   // Real-time vote updates function
   const updateVotes = useCallback(async () => {
-    const res = await fetch('/api/votes');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data: VoteData = await res.json();
-    
-    setState(prev => {
-      // Only update if there's actually a change to prevent unnecessary re-renders
-      if (prev.votes.guilty !== data.guilty || 
-          prev.votes.notGuilty !== data.notGuilty || 
-          prev.votes.votingClosed !== data.votingClosed) {
-        return {
-          ...prev,
-          votes: data,
-          hasVoted: !!data.userVote,
-          loading: false,
-          error: null,
-        };
+    try {
+      const res = await fetch('/api/votes');
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP ${res.status}`);
       }
-      return { ...prev, loading: false };
-    });
+      const data: VoteData = await res.json();
+      
+      setState(prev => {
+        // Only update if there's actually a change to prevent unnecessary re-renders
+        if (prev.votes.guilty !== data.guilty || 
+            prev.votes.notGuilty !== data.notGuilty || 
+            prev.votes.votingClosed !== data.votingClosed) {
+          return {
+            ...prev,
+            votes: data,
+            hasVoted: !!data.userVote,
+            loading: false,
+            error: null,
+          };
+        }
+        return { ...prev, loading: false, error: null };
+      });
+    } catch (error) {
+      console.error('Failed to fetch votes:', error);
+      setState(prev => ({
+        ...prev,
+        loading: false,
+        error: error instanceof Error ? error.message : 'Failed to fetch voting data',
+      }));
+    }
   }, []);
 
   // Use real-time updates hook

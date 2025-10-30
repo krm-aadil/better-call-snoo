@@ -1,5 +1,7 @@
 import { useGame } from './hooks/useGame';
 import { useDefenseSubmission } from './hooks/useDefenseSubmission';
+import { RoleSelection } from './components/RoleSelection';
+import { JudgePanel } from './components/JudgePanel';
 import { DailyDocket } from './components/DailyDocket';
 import { DefenseForm } from './components/DefenseForm';
 import { JuryVoting } from './components/JuryVoting';
@@ -16,6 +18,10 @@ export const App = () => {
     selectCase,
     backToDocket,
     setGameState,
+    selectJudgeRole,
+    selectDefendantRole,
+    backToRoleSelection,
+    selectDefendantPost,
   } = useGame();
   const {
     submitDefense,
@@ -48,9 +54,8 @@ export const App = () => {
       // Corrected the background image path as per your instruction
       <div
         className="flex justify-center items-center min-h-screen bg-center bg-no-repeat"
-        style={{ 
+        style={{
           backgroundImage: `url('/New-Loading-Screen.png')`,
-          backgroundSize: '100% 100%'
         }}
       >
         <div
@@ -76,6 +81,26 @@ export const App = () => {
   }
 
   switch (gameState) {
+    case 'role_selection':
+      return (
+        <div className="animate-fade-in-up">
+          <RoleSelection
+            onJudgeSelect={selectJudgeRole}
+            onDefendantSelect={selectDefendantRole}
+          />
+        </div>
+      );
+
+    case 'judge_panel':
+      return (
+        <div className="animate-scale-in">
+          <JudgePanel
+            onBackToRoleSelection={backToRoleSelection}
+            onSelectDefendantPost={selectDefendantPost}
+          />
+        </div>
+      );
+
     case 'daily_docket':
       return (
         <div className="animate-scale-in">
