@@ -144,10 +144,8 @@ export const JuryVoting: React.FC<JuryVotingProps> = ({
           </div>
 
           {/* Live Results Section */}
-          <div className="bg-white border-4 border-black rounded-lg shadow-xl p-6 max-w-2xl mx-auto w-full mb-6">
-            <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
-              LIVE VOTING RESULTS
-            </h3>
+          <div className="bg-blue-600 border-4 border-black rounded-lg shadow-xl p-6 max-w-2xl mx-auto w-full mb-6">
+            <h3 className="text-xl font-bold text-white mb-4 text-center">LIVE VOTING RESULTS</h3>
             <div className="flex items-center justify-center">
               <ScalesOfJustice
                 votes={votes}
@@ -169,7 +167,7 @@ export const JuryVoting: React.FC<JuryVotingProps> = ({
             </div>
 
             <div className="text-center mt-4">
-              <div className="text-lg font-semibold text-gray-700">
+              <div className="text-lg font-semibold text-white">
                 Total Votes: {votes.totalVotes}
               </div>
             </div>
